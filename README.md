@@ -112,7 +112,7 @@ Example 3 (with event number):
 
 ![Imgur](https://i.imgur.com/G6VzMZ0.png)
 
-**If your Discord account is not public on your smash.gg profile or your accounts have not been linked through TournaBot, your smash.gg username will be shown in bold instead**. As you can see, my username is shown in bold.
+**If your Discord account is not public on your smash.gg profile and your accounts have not been linked through TournaBot, your smash.gg username will be shown in bold instead**. As you can see, my username is shown in bold.
 
 > `t!dq stop`
 
