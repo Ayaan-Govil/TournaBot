@@ -1,6 +1,6 @@
 # TournaBot
 
-TournaBot is a Discord bot designed to streamline [smash.gg](https://smash.gg/) tournaments and improve user quality-of-life through specialized commands - built on [Node.js](https://nodejs.org/en/) and [Discord.js](https://discord.js.org/#/).
+TournaBot is a Discord bot designed to streamline [smash.gg](https://smash.gg/) tournaments and improve user quality-of-life through specialized commands - built on [Node.js](https://nodejs.org/en/) and [Discord.js](https://discord.js.org/#/). TournaBot's automatic match calling feature was recently used for the GOML 2020 NA Northeast Qualifiers, which included nearly 270 attendees!
 
 ## Table of Contents
 
@@ -11,8 +11,8 @@ TournaBot is a Discord bot designed to streamline [smash.gg](https://smash.gg/) 
   - [Commands](#commands)
     - [Account-Based Commands](#account-based-commands)
       - [Account](#account)
-      - [User Tournament Results](#user-tournament-results)
       - [DQ Pinging (Admin-only)](#dq-pinging-admin-only)
+      - [User Tournament Results](#user-tournament-results)
     - [Admin Commands](#admin-commands)
       - [Tournament Announcing](#tournament-announcing)
       - [Tournament Searching](#tournament-searching)
@@ -20,13 +20,14 @@ TournaBot is a Discord bot designed to streamline [smash.gg](https://smash.gg/) 
       - [Timezone](#timezone)
       - [Matchmaking](#matchmaking)
       - [Help](#help)
+  - [Upcoming Features](#upcoming-features)
   - [Development and Help](#development-and-help)
 
 ## Features
 
-- **User tournament results** that include details and sets from a user's three latest tournaments.
-
 - **Automatic match calling** called DQ pinging, which automatically pings users in a specified channel a minute after their match has been called.
+
+- **User tournament results** that include details and sets from a user's three latest tournaments.
 
 - **Announcing tournaments with event and tournament information** so that you don't have to.
 
@@ -65,16 +66,6 @@ Checks if a user as linked their account.
 ![Imgur](https://i.imgur.com/tTMfqEr.png)
 
 ![Imgur](https://i.imgur.com/92dje2R.png)
-
-#### User Tournament Results
-
-> `t!results <Discord tag with or without @ (optional)>`
-
-Provides a user's results from their three latest tournaments (this includes tournaments that the user is an admin of, trying to fix). Reactions are used to see each tournament individually. Leaving the argument empty gives you your own results. **Requires the user to have linked their accounts through TournaBot**.
-
-![Imgur](https://i.imgur.com/xDIX97g.png)
-
-This would work as well by sending `t!results Turple#numbers`. Being able to refer to people with their full Discord tag enables users to see each other's results from different servers, as long as their accounts are linked. The side color of the results matches the most vibrant color from the user's profile picture.
 
 #### DQ Pinging (Admin-only)
 
@@ -119,6 +110,16 @@ Example 3 (with event number):
 Pretty self-explanatory - stops DQ pinging.
 
 ![Imgur](https://i.imgur.com/6qhNjyN.png)
+
+#### User Tournament Results
+
+> `t!results <Discord tag with or without @ (optional)>`
+
+Provides a user's results from their three latest tournaments (this includes tournaments that the user is an admin of, trying to fix). Reactions are used to see each tournament individually. Leaving the argument empty gives you your own results. **Requires the user to have linked their accounts through TournaBot**.
+
+![Imgur](https://i.imgur.com/xDIX97g.png)
+
+This would work as well by sending `t!results Turple#numbers`. Being able to refer to people with their full Discord tag enables users to see each other's results from different servers, as long as their accounts are linked. The side color of the results matches the most vibrant color from the user's profile picture.
 
 ### Admin Commands
 
@@ -180,7 +181,7 @@ Currently Supported Games: `Super Smash Bros. Ultimate`, `Valorant`
 
 > `t!set timezone <city>`
 
-Sets the timezone used for `t!results` and `t!announce`.
+Sets the timezone that TournaBot uses, unique by server. The timestamps shown on `t!results` and `t!announce` will use the timezone provided.
 Currently Supported Cities: `America/Los_Angeles`, `America/Phoenix`, `America/Denver`, `America/Regina`, `America/Chicago`, `America/New_York`, `Pacific/Honolulu`
 
 ![Imgur](https://i.imgur.com/U71vwaF.png)
@@ -228,6 +229,14 @@ Pings all users that are active for matchmaking then deletes the mentions.
 > `t!help`
 
 Provides a link to this repository.
+
+## Upcoming Features
+
+- Support Server
+
+- `t!account status` taking a tournament link and showing the account status of each entrant.
+
+- `t!sets`, which shows a user's set count against another specified user along with recent sets.
 
 ## Development and Help
 
