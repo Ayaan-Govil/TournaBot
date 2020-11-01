@@ -77,11 +77,11 @@ Example 3 (no argument):
 
 Example 4 (with full URL):
 
-![Imgur](https://i.imgur.com/vmKW8n3.png)
+![Imgur](https://i.imgur.com/LAQ7FsX.png)
 
 Example 5 (with short URL):
 
-![Imgur](https://i.imgur.com/Ngh7uji.png)
+![Imgur](https://i.imgur.com/ewDsa8h.png)
 
 #### DQ Pinging (Admin-only)
 
