@@ -59,13 +59,29 @@ Unlinks your smash.gg account and Discord account.
 
 ![Imgur](https://i.imgur.com/4mmR4o7.png)
 
-> `t!account status <Discord tag with or without @ (optional)>`
+> `t!account status <Discord tag with/without @ OR tournament URL/short URL>`
 
-Checks if a user as linked their account.
+Checks if a user as linked their account OR checks if an attendee has linked their accounts for all attendees of a tournament.
+
+Example 1 (with mention):
 
 ![Imgur](https://i.imgur.com/tTMfqEr.png)
 
+Example 2 (with tag):
+
+![Imgur](https://i.imgur.com/KGoU2bs.png)
+
+Example 3 (no argument):
+
 ![Imgur](https://i.imgur.com/92dje2R.png)
+
+Example 4 (with full URL):
+
+![Imgur](https://i.imgur.com/vmKW8n3.png)
+
+Example 5 (with short URL):
+
+![Imgur](https://i.imgur.com/Ngh7uji.png)
 
 #### DQ Pinging (Admin-only)
 
@@ -234,7 +250,7 @@ Provides a link to this repository.
 
 - Support Server
 
-- `t!account status` taking a tournament link and showing the account status of each entrant.
+- Fix for TO'd tournaments showing up on `t!results`
 
 - `t!sets`, which shows a user's set count against another specified user along with recent sets.
 
