@@ -1,6 +1,6 @@
 # TournaBot
 
-TournaBot is a Discord bot designed to streamline [smash.gg](https://smash.gg/) tournaments and improve user quality-of-life through specialized commands - built on [Node.js](https://nodejs.org/en/) and [Discord.js](https://discord.js.org/#/). TournaBot's automatic match calling feature was recently used for the GOML 2020 NA Northeast Qualifiers, which included nearly 270 attendees!
+TournaBot is a Discord bot designed to streamline [smash.gg](https://smash.gg/) tournaments and improve user quality-of-life through specialized commands - built on [Node.js](https://nodejs.org/en/) and [Discord.js](https://discord.js.org/#/). TournaBot's automatic match calling feature was used for the GOML 2020 NA Northeast Qualifiers, which included nearly 270 attendees! 
 
 ## Table of Contents
 
@@ -131,7 +131,7 @@ Pretty self-explanatory - stops DQ pinging.
 
 > `t!results <Discord tag with or without @ (optional)>`
 
-Provides a user's results from their three latest tournaments (this includes tournaments that the user is an admin of, trying to fix). Reactions are used to see each tournament individually. Leaving the argument empty gives you your own results. **Requires the user to have linked their accounts through TournaBot**.
+Provides a user's results from their three latest tournaments. Reactions are used to see each tournament individually. Leaving the argument empty gives you your own results. **Requires the user to have linked their accounts through TournaBot**.
 
 ![Imgur](https://i.imgur.com/xDIX97g.png)
 
@@ -250,9 +250,9 @@ Provides a link to this repository.
 
 - Support Server
 
-- Fix for TO'd tournaments showing up on `t!results`
-
 - `t!sets`, which shows a user's set count against another specified user along with recent sets.
+
+- More to come!
 
 ## Development and Help
 
