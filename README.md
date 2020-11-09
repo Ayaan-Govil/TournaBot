@@ -35,8 +35,6 @@ TournaBot is a Discord bot designed to streamline [smash.gg](https://smash.gg/) 
 
 - **Search for tournaments** by game directly in your server.
 
-In addition, TournaBot will also send a welcome message to users that join a server, asking them to link their accounts in order to see their own tournament results.
-
 ## Inviting TournaBot
 
 You can invite TournaBot to your Discord server through [this link](https://discord.com/oauth2/authorize?client_id=719283403698077708&scope=bot&permissions=8).
