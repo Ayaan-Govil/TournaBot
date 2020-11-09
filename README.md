@@ -133,7 +133,7 @@ Pretty self-explanatory - stops DQ pinging.
 
 Provides a user's results from their three latest tournaments. Reactions are used to see each tournament individually. Leaving the argument empty gives you your own results. **Requires the user to have linked their accounts through TournaBot**.
 
-![Imgur](https://i.imgur.com/xDIX97g.png)
+![Imgur](https://i.imgur.com/0t9Xjqy.png)
 
 This would work as well by sending `t!results Turple#numbers`. Being able to refer to people with their full Discord tag enables users to see each other's results from different servers, as long as their accounts are linked. The side color of the results matches the most vibrant color from the user's profile picture.
 
@@ -188,7 +188,10 @@ Example 2: (short URL and no ping)
 
 > `t!search <game>`
 
-Searches for the top 10 upcoming tournaments by game.
+Searches for the top 10 upcoming tournaments by game. Games are not case sensitive.
+
+![Imgur](https://i.imgur.com/jo3TJ1J.png)
+
 Currently Supported Games: `Super Smash Bros. Ultimate`, `Valorant`
 
 ### Other Commands
