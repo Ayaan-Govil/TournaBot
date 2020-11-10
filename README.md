@@ -131,7 +131,7 @@ Pretty self-explanatory - stops DQ pinging.
 
 Provides a user's results from their three latest tournaments. Reactions are used to see each tournament individually. Leaving the argument empty gives you your own results. **Requires the user to have linked their accounts through TournaBot**.
 
-![Imgur](https://i.imgur.com/0t9Xjqy.png)
+![Imgur](https://i.imgur.com/85TKGU3.png)
 
 This would work as well by sending `t!results Turple#numbers`. Being able to refer to people with their full Discord tag enables users to see each other's results from different servers, as long as their accounts are linked. The side color of the results matches the most vibrant color from the user's profile picture.
 
