@@ -23,7 +23,7 @@ TournaBot is a Discord bot designed to streamline [smash.gg](https://smash.gg/) 
   - [Upcoming Features](#upcoming-features)
   - [Development and Help](#development-and-help)
 
-## Features
+## Main Features
 
 - **Automatic match calling** called DQ pinging, which automatically pings users in a specified channel a minute after their match has been called.
 
