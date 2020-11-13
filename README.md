@@ -2,7 +2,7 @@
 
 TournaBot is a Discord bot designed to streamline [smash.gg](https://smash.gg/) tournaments and improve user quality-of-life through specialized commands - built on [Node.js](https://nodejs.org/en/) and [Discord.js](https://discord.js.org/#/). TournaBot's automatic match calling feature was used for the GOML 2020 NA Northeast Qualifiers, which included nearly 270 attendees! 
 
-## Table of Contents
+## Table of Contentss
 
 - [TournaBot](#tournabot)
   - [Table of Contents](#table-of-contents)
