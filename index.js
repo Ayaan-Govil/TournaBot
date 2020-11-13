@@ -741,8 +741,11 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                     if (imageurl) {
                       let v = new Vibrant(imageurl);
                       v.getPalette(function (err, palette) {
+                        if (err) {
+                          throw err;
+                        }
                         sendResults(palette.Vibrant._rgb);
-                      });
+                      }).catch(err => console.log(err));
                     } else {
                       sendResults('#FF0000');
                     }
