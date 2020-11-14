@@ -32,6 +32,8 @@ TournaBot is a Discord bot designed to streamline [smash.gg](https://smash.gg/) 
 
 ## Contributing
 
+To add your changes to the project, create a [pull request](https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project) for this repository. 
+
 ### Running TournaBot Locally
 
 TournaBot was initially created on Windows, but is compatible with any UNIX-based system.
