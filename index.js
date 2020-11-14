@@ -283,7 +283,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                               .setURL(tournamentURL)
                               .addField('User Accounts Linked:', fieldArray.slice(0, 10).join(`
 `), true)
-                              .setFooter(`Showing ${index + 1}-${index + current.length} out of ${attendeeArray.length} attendees`, 'https://cdn.discordapp.com/attachments/719461475848028201/724545681569611836/tlogo_1.png');
+                              .setFooter(`Showing ${index + 1}-${index + current.length} out of ${attendeeArray.length} attendees`, 'https://cdn.discordapp.com/attachments/719461475848028201/777094320531439636/image.png');
                             if (fieldArray.length > 10) {
                               embed.addField('\u2800', fieldArray.slice(10, 20).join(`
                                 `), true);
@@ -767,7 +767,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
 `), inline: true
                             })
                           //.setTimestamp()
-                          .setFooter(`Tournament ${index + 1} of ${tIndex + 1}`, 'https://cdn.discordapp.com/attachments/719461475848028201/724545681569611836/tlogo_1.png');
+                          .setFooter(`Tournament ${index + 1} of ${tIndex + 1}`, 'https://cdn.discordapp.com/attachments/719461475848028201/777094320531439636/image.png');
                         return results;
                       }
 
@@ -2014,7 +2014,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                   .setTitle('Matchmaking')
                   .setDescription(listMessage.join(`
 `))
-                  .setFooter('TournaBot', 'https://cdn.discordapp.com/attachments/719461475848028201/724545681569611836/tlogo_1.png');
+                  .setFooter('TournaBot', 'https://cdn.discordapp.com/attachments/719461475848028201/777094320531439636/image.png');
                 message.channel.send(rolesList);
               }).catch(err => console.log(err));
             } else {
@@ -2151,7 +2151,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                     .setURL(`https://smash.gg/${tournamentArray[index][0].slug}`)
                     .setThumbnail(iconurl)
                     .setImage(backgroundurl)
-                    .setFooter(`Tournament ${index + 1} of 10`, 'https://cdn.discordapp.com/attachments/719461475848028201/724545681569611836/tlogo_1.png');
+                    .setFooter(`Tournament ${index + 1} of 10`, 'https://cdn.discordapp.com/attachments/719461475848028201/777094320531439636/image.png');
                   return results;
                 }
 
