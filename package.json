@@ -15,9 +15,9 @@
     "es6-promise": "^4.2.8",
     "mongodb": "^3.6.3",
     "mongoose": "^5.10.13",
+    "node-fetch": "^2.6.1",
     "node-vibrant": "^3.1.6",
     "replaceall": "^0.1.6",
-    "smashgg.js": "^4.1.17",
     "urllib": "^2.36.1"
   }
 }
