@@ -1,15 +1,26 @@
 // Dependencies
 const Discord = require('discord.js');
 const { PREFIX, DISCORDTOKEN, ALTDISCORDTOKEN, SMASHGGTOKEN } = require('./config.json');
-const client = new Discord.Client();
 const database = require('./database/database');
 const editJsonFile = require('edit-json-file');
 const characterfile = editJsonFile('./database/character_codes.json');
-const smashgg = require('smashgg.js'); // KEEP THIS HERE OR FETCH DOESNT WORK (?)
+const fetch = require('node-fetch');
 const urllib = require('urllib');
 const Vibrant = require('node-vibrant');
 const replaceall = require('replaceall');
 const mongoose = require('mongoose');
+const functions = require('./functions');
+//const fs = require('fs');
+
+const client = new Discord.Client();
+// client.commands = new Discord.Collection();
+
+// const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+// for (const file of commandFiles) {
+//   const command = require(`./commands/${file}`);
+//   client.commands.set(command.name, command);
+// }
 
 // MongoDB Models
 const channelModel = require('./database/models/channel');
@@ -19,6 +30,7 @@ const mmroleModel = require('./database/models/mmrole');
 const announcemessageModel = require('./database/models/announcemessage');
 const pingroleModel = require('./database/models/pingrole');
 const timezoneModel = require('./database/models/timezone');
+//const languageModel = require('./database/models/language');
 //const invmsgModel = require('./database/models/invmsg');
 
 // Map used for tracking DQ pinging
@@ -32,6 +44,7 @@ const dqPingingMap = new Map();
 
 // TODO:
 /*
+- move commands to folder with each file corresponding to the command
 - come up with more discord -> smash.gg integrations
 - ping both players on a team for doubles instead of one
 - sets on player command
@@ -45,7 +58,7 @@ const dqPingingMap = new Map();
 
 // On Discord client ready, inform in console
 client.once('ready', () => {
-  console.log(`Ready at ${convertEpochToClock(Date.now() / 1000, 'America/Los_Angeles', true)}`);
+  console.log(`Ready at ${functions.convertEpochToClock(Date.now() / 1000, 'America/Los_Angeles', true)}`);
   database.then(() => console.log('Connected to MongoDB')).catch(err => console.log(err));
   client.user.setActivity('for t!help', { type: 'WATCHING' });
 });
@@ -77,6 +90,20 @@ client.on('guildCreate', guild => {
 
 // On message recieved, check for commands
 client.on('message', message => {
+
+  if (!message.content.startsWith(PREFIX) || message.author.bot) return;
+
+  // const args = message.content.slice(PREFIX.length).trim().split(/ +/);
+  // const command = args.shift().toLowerCase();
+
+  // if (!client.commands.has(command)) return;
+
+  // try {
+  //   client.commands.get(command).execute(message, args);
+  // } catch (error) {
+  //   console.error(error);
+  //   //message.reply('there was an error trying to execute that command!');
+  // }
 
   // t!help
   if (message.content.toLowerCase().startsWith(`${PREFIX}help`)) {
@@ -177,7 +204,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                     urlslug = urlslug.toString();
                     getAttendeesAndList(urlslug, res.headers.location);
                   } else { sendMessage('I could not find a tournament from the short URL. Do \`t!help\` to get command info.'); }
-                }).catch(err => console.log(err));
+                });
               } else {
                 let urlslug = potentialTag.replace('https://smash.gg/tournament/', '');
                 urlslug = urlslug.split('/');
@@ -452,6 +479,8 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                 user(slug: $slug) {
                   images {
                     url
+                    height
+                    width
                   }
                   player {
                     id
@@ -480,9 +509,13 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
           formattedName = replaceall('_', '\\_', formattedName);
           sendMessage(`Getting the latest tournament results for ${formattedName}...`);
           playerIds = data.data.user.player.id;
-          imageurl = data.data.user.images[0];
-          if (!(imageurl == undefined)) {
-            imageurl = JSON.stringify(imageurl).slice(8, -2);
+          if (data.data.user.images[0] != undefined) {
+            if (data.data.user.images[0].height === data.data.user.images[0].width) {
+              imageurl = data.data.user.images[0].url;
+            } else if (data.data.user.images[1] != undefined) {
+              imageurl = data.data.user.images[1].url;
+            }
+            //imageurl = JSON.stringify(imageurl).slice(8, -2);
           }
           let guildID;
           // replace below with ternary operator
@@ -597,7 +630,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                         if (tournamentsdone[t].isOnline) {
                           eventstats[tIndex].push(`*Online Tournament*`);
                         } else { eventstats[tIndex].push(`*Offline Tournament*`); }
-                        let tournamentTime = convertEpoch(tournamentsdone[t].startAt, cityTimezone);
+                        let tournamentTime = functions.convertEpoch(tournamentsdone[t].startAt, cityTimezone);
                         eventstats[tIndex].push(`*${tournamentTime}*`);
                         let tournamentLink = `https://smash.gg/${tournamentsdone[t].slug}`;
                         eventstats[tIndex].push(`*${tournamentLink}*
@@ -863,7 +896,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
   /*
   How DQ Pinging should work (my idea prior to coding it):
   1. TO does t!set dqpingchannel <channel> to set the dq pinging channel
-  2. TO does t!dqping (short url or tournament link) - Bot queries for timestamps
+  2. TO does t!dq ping (short url or tournament link) - Bot queries for timestamps
   3. If tournament has not started, callback message
   4. Else bot will continue with the DQ pinging loop:
       
@@ -876,7 +909,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
  
   5. Repeat steps b-f in a loop until all called sets have been pinged for the current query
   6. Wait 5 seconds then repeat from step 4
-  7. If TO does t!stopdqping break from steps 4-8 loop
+  7. If TO does t!dq stop break from steps 4-8 loop
   */
 
   // DQ PINGING
@@ -898,8 +931,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
             if (dqArgs.length >= 2) {
               dqArgs.shift();
               if (dqPingingMap.get(message.guild.id) === undefined) {
-                sendMessage('Starting DQ pinging...');
-                let dqchannel;
+                var dqchannel = undefined;
                 if (dqArgs[0].startsWith('smash.gg/')) {
                   // Find path of short URL and parse URL for slug
                   urllib.request('https://' + dqArgs[0], function (err, data, res) {
@@ -919,14 +951,11 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                         }
                         if (result.length) {
                           dqchannel = result[0].channelid;
-                          dqPing(urlslug);
-                        } else {
-                          dqchannel = undefined;
-                          dqPing(urlslug);
                         }
+                        dqPing(urlslug);
                       }).catch(err => console.log(err));
                     } else { sendMessage('I could not find a tournament from the short URL. Do \`t!help\` to get command info.'); }
-                  }).catch(err => console.log(err));
+                  });
                 } else if (dqArgs[0].startsWith('https://smash.gg/tournament/')) {
                   let urlslug = dqArgs[0].replace('https://smash.gg/tournament/', '');
                   urlslug = urlslug.split('/');
@@ -940,16 +969,15 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                     }
                     if (result.length) {
                       dqchannel = result[0].channelid;
-                      dqPing(urlslug);
-                    } else {
-                      dqchannel = undefined;
-                      dqPing(urlslug);
                     }
+                    dqPing(urlslug);
                   }).catch(err => console.log(err));
                 } else { sendMessage('I could not recognize the URL provided. Do \`t!help\` to get command info.'); }
 
                 function dqPing(slugSpecified) {
                   if (!(dqchannel === undefined)) {
+                    sendMessage('Starting DQ pinging...');
+                    dqchannel = client.channels.cache.get(dqchannel);
                     let eventNumber = parseInt(dqArgs[1]);
                     var pingEvent = false;
                     var indexEvent;
@@ -968,6 +996,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                     var slug = slugSpecified;
                     var query = `query TournamentStartAndEnd($slug: String) {
                                       tournament(slug: $slug) {
+                                        name
                                         endAt
                                         events {
                                           startAt
@@ -1147,7 +1176,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                                         entrantTwoMention = `<@${result[1].discordid}>`;
                                                       }
                                                     }
-                                                    client.channels.cache.get(dqchannel).send(`${entrantOneMention} and ${entrantTwoMention}, your match for ${endText}`).catch(err => console.log(err));
+                                                    dqchannel.send(`${entrantOneMention} and ${entrantTwoMention}, your match for ${endText}`).catch(err => console.log(err));
                                                   }).catch(err => console.log(err));
                                                 }
                                               }
@@ -1237,7 +1266,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                                       entrantTwoMention = `<@${result[1].discordid}>`;
                                                     }
                                                   }
-                                                  client.channels.cache.get(dqchannel).send(`${entrantOneMention} and ${entrantTwoMention}, your match for ${endText}`).catch(err => console.log(err));
+                                                  dqchannel.send(`${entrantOneMention} and ${entrantTwoMention}, your match for ${endText}`).catch(err => console.log(err));
                                                 }).catch(err => console.log(err));
                                               }
                                             }
@@ -1326,7 +1355,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                                   entrantTwoMention = `<@${result[1].discordid}>`;
                                                 }
                                               }
-                                              client.channels.cache.get(dqchannel).send(`${entrantOneMention} and ${entrantTwoMention}, your match for ${endText}`).catch(err => console.log(err));
+                                              dqchannel.send(`${entrantOneMention} and ${entrantTwoMention}, your match for ${endText}`).catch(err => console.log(err));
                                             }).catch(err => console.log(err));
                                           }
                                         }
@@ -1522,106 +1551,102 @@ New Announcement Message: ${setArgs}`);
 
           // t!set pingrole <@role>
           case 'pingrole':
-            if (message.member.hasPermission('ADMINISTRATOR')) {
-              if (setArgs.length === 2) {
-                setArgs.shift();
-                setArgs = setArgs.join(' ');
-                let potentialRole = setArgs.replace('<@', '').replace('&', '').replace('>', '');
-                var addedRole = message.guild.roles.cache.find(role => role.id === potentialRole);
-                if (!(addedRole === undefined)) {
-                  pingroleModel.find({
-                    guildid: guildID
-                  }, function (err, result) {
-                    if (err) {
-                      throw err;
-                    }
-                    if (result.length) {
-                      pingroleModel.replaceOne({
-                        guildid: guildID
-                      }, {
-                        guildid: guildID,
-                        role: addedRole
-                      }, function (err, result) {
-                        if (err) {
-                          throw err;
-                        }
-                        sendMessage(`The announcement pinging role has been changed to ${setArgs} :white_check_mark:`);
-                      }).catch(err => console.log(err));
-                    } else {
-                      let roleSet = new pingroleModel({
-                        guildid: guildID,
-                        role: addedRole
-                      }).save().then(result => sendMessage(`The announcement pinging role is now set to ${setArgs} :white_check_mark:`)).catch(err => console.log(err));
-                    }
-                  }).catch(err => console.log(err));
-                } else { sendMessage(`I could not find the specified role. Make sure you are pinging the role using @.`) }
-              } else if (setArgs.length === 1) {
-                pingroleModel.findOneAndDelete({
+            if (setArgs.length === 2) {
+              setArgs.shift();
+              setArgs = setArgs.join(' ');
+              let potentialRole = setArgs.replace('<@', '').replace('&', '').replace('>', '');
+              var addedRole = message.guild.roles.cache.find(role => role.id === potentialRole);
+              if (!(addedRole === undefined)) {
+                pingroleModel.find({
                   guildid: guildID
                 }, function (err, result) {
                   if (err) {
                     throw err;
                   }
-                  sendMessage(`The announcement pinging role has been reset! :white_check_mark:`);
+                  if (result.length) {
+                    pingroleModel.replaceOne({
+                      guildid: guildID
+                    }, {
+                      guildid: guildID,
+                      role: addedRole
+                    }, function (err, result) {
+                      if (err) {
+                        throw err;
+                      }
+                      sendMessage(`The announcement pinging role has been changed to ${setArgs} :white_check_mark:`);
+                    }).catch(err => console.log(err));
+                  } else {
+                    let roleSet = new pingroleModel({
+                      guildid: guildID,
+                      role: addedRole
+                    }).save().then(result => sendMessage(`The announcement pinging role is now set to ${setArgs} :white_check_mark:`)).catch(err => console.log(err));
+                  }
                 }).catch(err => console.log(err));
-              } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
-            } else { message.reply('you don\'t have the permissions for that :sob:'); }
+              } else { sendMessage(`I could not find the specified role. Make sure you are pinging the role using @.`) }
+            } else if (setArgs.length === 1) {
+              pingroleModel.findOneAndDelete({
+                guildid: guildID
+              }, function (err, result) {
+                if (err) {
+                  throw err;
+                }
+                sendMessage(`The announcement pinging role has been reset! :white_check_mark:`);
+              }).catch(err => console.log(err));
+            } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
             break;
 
           // t!set timezone <city>
           case 'timezone':
-            if (message.member.hasPermission('ADMINISTRATOR')) {
-              if (setArgs.length === 2) {
-                setArgs.shift();
-                setArgs = setArgs.join('');
-                let potentialTimezones = ['America/Los_Angeles', 'America/Phoenix', 'America/Denver', 'America/Regina', 'America/Chicago', 'America/New_York', 'Pacific/Honolulu'];
-                if (potentialTimezones.includes(setArgs)) {
-                  let currentDate = new Date();
-                  let newTimezone = currentDate.toLocaleString('default', { timeZoneName: 'short', timeZone: setArgs });
-                  newTimezone = newTimezone.slice(newTimezone.length - 3);
-                  timezoneModel.find({
-                    guildid: guildID
-                  }, function (err, result) {
-                    if (err) {
-                      throw err;
-                    }
-                    if (result.length) {
-                      timezoneModel.replaceOne({
-                        guildid: guildID
-                      }, {
-                        guildid: guildID,
-                        timezone: setArgs
-                      }, function (err, result) {
-                        if (err) {
-                          throw err;
-                        }
-                        sendMessage(`The timezone has been changed to **${newTimezone}** :white_check_mark:`);
-                      }).catch(err => console.log(err));
-                    } else {
-                      let timezoneSet = new timezoneModel({
-                        guildid: guildID,
-                        timezone: setArgs
-                      }).save().then(result => sendMessage(`The timezone is now set to **${newTimezone}** :white_check_mark:`)).catch(err => console.log(err));
-                    }
-                  }).catch(err => console.log(err));
-                } else {
-                  sendMessage(`I could not recognize the city specified for timezone.
-Currently Supported Cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`America/Denver\`, \`America/Regina\`, \`America/Chicago\`, \`America/New_York\`, \`Pacific/Honolulu\``)
-                }
-              } else if (setArgs.length === 1) {
+            if (setArgs.length === 2) {
+              setArgs.shift();
+              setArgs = setArgs.join('');
+              let potentialTimezones = ['America/Los_Angeles', 'America/Phoenix', 'America/Denver', 'America/Regina', 'America/Chicago', 'America/New_York', 'Pacific/Honolulu'];
+              if (potentialTimezones.includes(setArgs)) {
                 let currentDate = new Date();
-                let newTimezone = currentDate.toLocaleString('default', { timeZoneName: 'short', timeZone: 'America/Los_Angeles' });
+                let newTimezone = currentDate.toLocaleString('default', { timeZoneName: 'short', timeZone: setArgs });
                 newTimezone = newTimezone.slice(newTimezone.length - 3);
-                timezoneModel.findOneAndDelete({
+                timezoneModel.find({
                   guildid: guildID
                 }, function (err, result) {
                   if (err) {
                     throw err;
                   }
-                  sendMessage(`The timezone has been reset to **${newTimezone}** :white_check_mark:`);
+                  if (result.length) {
+                    timezoneModel.replaceOne({
+                      guildid: guildID
+                    }, {
+                      guildid: guildID,
+                      timezone: setArgs
+                    }, function (err, result) {
+                      if (err) {
+                        throw err;
+                      }
+                      sendMessage(`The timezone has been changed to **${newTimezone}** :white_check_mark:`);
+                    }).catch(err => console.log(err));
+                  } else {
+                    let timezoneSet = new timezoneModel({
+                      guildid: guildID,
+                      timezone: setArgs
+                    }).save().then(result => sendMessage(`The timezone is now set to **${newTimezone}** :white_check_mark:`)).catch(err => console.log(err));
+                  }
                 }).catch(err => console.log(err));
-              } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
-            } else { message.reply('you don\'t have the permissions for that :sob:'); }
+              } else {
+                sendMessage(`I could not recognize the city specified for timezone.
+Currently Supported Cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`America/Denver\`, \`America/Regina\`, \`America/Chicago\`, \`America/New_York\`, \`Pacific/Honolulu\``)
+              }
+            } else if (setArgs.length === 1) {
+              let currentDate = new Date();
+              let newTimezone = currentDate.toLocaleString('default', { timeZoneName: 'short', timeZone: 'America/Los_Angeles' });
+              newTimezone = newTimezone.slice(newTimezone.length - 3);
+              timezoneModel.findOneAndDelete({
+                guildid: guildID
+              }, function (err, result) {
+                if (err) {
+                  throw err;
+                }
+                sendMessage(`The timezone has been reset to **${newTimezone}** :white_check_mark:`);
+              }).catch(err => console.log(err));
+            } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
             break;
 
           default:
@@ -1664,7 +1689,7 @@ Currently Supported Cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`Amer
                       urlslug = urlslug.toString();
                       getDataAndAnnounce(urlslug, res.headers.location);
                     } else { sendMessage('I could not find a tournament from the short URL. Do \`t!help\` to get command info.'); }
-                  }).catch(err => console.log(err));
+                  });
                 } else {
                   let urlslug = tournamentArgs[0].replace('https://smash.gg/tournament/', '');
                   urlslug = urlslug.split('/');
@@ -1724,15 +1749,15 @@ Currently Supported Cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`Amer
                           for (i = 0; i < events.length; i++) {
                             eventNames.push(`**${events[i].name}**`);
                             if (events[i].checkInEnabled) {
-                              eventNames.push(` - ${convertEpoch(events[i].startAt, cityTimezone)}
-Check-in opens at ${convertEpochToClock(events[i].startAt - events[i].checkInBuffer - events[i].checkInDuration, cityTimezone, false)} and closes at ${convertEpochToClock(events[i].startAt - events[i].checkInBuffer, cityTimezone, false)}.
+                              eventNames.push(` - ${functions.convertEpoch(events[i].startAt, cityTimezone)}
+Check-in opens at ${functions.convertEpochToClock(events[i].startAt - events[i].checkInBuffer - events[i].checkInDuration, cityTimezone, false)} and closes at ${functions.convertEpochToClock(events[i].startAt - events[i].checkInBuffer, cityTimezone, false)}.
 `);
                             } else {
-                              eventNames.push(` - ${convertEpoch(events[i].startAt, cityTimezone)}
+                              eventNames.push(` - ${functions.convertEpoch(events[i].startAt, cityTimezone)}
 `);
                             }
                           }
-                          let registrationCloseTime = convertEpoch(data.data.tournament.registrationClosesAt, cityTimezone);
+                          let registrationCloseTime = functions.convertEpoch(data.data.tournament.registrationClosesAt, cityTimezone);
                           let tournamentAnnounceMessage;
                           announcemessageModel.find({
                             guildid: guildID
@@ -2192,79 +2217,29 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
   }
 
   function sendMessage(specifiedMessage) {
-    const messageEmbeded = new Discord.MessageEmbed()
+    let finalMessage = specifiedMessage;
+    // if (message.guild != null) {
+    //   languageModel.find({
+    //     guildid: message.guild.id
+    //   }, function (err, result) {
+    //     if (err) {
+    //       throw err;
+    //     }
+    //     if (result.length) {
+    //       translate(specifiedMessage, { from: 'en', to: result[0].language }).then(text => {
+    //         console.log(text);
+    //       }).catch(err => console.log(err));
+    //     }
+    //   }).catch(err => console.log(err));
+
+    // }
+
+    const messageEmbed = new Discord.MessageEmbed()
       .setColor('#FF0000')
-      .setDescription(specifiedMessage);
-    message.channel.send(messageEmbeded);
+      .setDescription(finalMessage);
+    message.channel.send(messageEmbed);
   }
 });
-
-function convertEpoch(epoch, citytimezone) {
-  let convertedTime;
-  let date = new Date(0);
-  date.setUTCSeconds(epoch);
-  let year = date.toLocaleString('default', { year: 'numeric', timeZone: citytimezone });
-  let month = date.toLocaleString('default', { month: 'long', timeZone: citytimezone });
-  let monthDate = date.toLocaleString('default', { day: '2-digit', timeZone: citytimezone });
-  let dayOfTheWeek = date.toLocaleString('default', { weekday: 'long', timeZone: citytimezone });
-  let hour = date.toLocaleString('default', { hour: '2-digit', timeZone: citytimezone });
-  let minutes = date.toLocaleString('default', { minute: '2-digit', timeZone: citytimezone });
-  let timezone = date.toLocaleString('default', { timeZoneName: 'short', timeZone: citytimezone });
-  let firstTen = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09'];
-  let ampm;
-  if (monthDate.startsWith(0)) {
-    monthDate = monthDate.slice(1);
-  }
-  // replace below with ternary operator
-  if (hour.includes('PM')) {
-    ampm = 'PM';
-  } else {
-    ampm = 'AM';
-  }
-  hour = hour.replace(/\D/g, '');
-  if (hour.startsWith(0)) {
-    hour = hour.slice(1);
-  }
-  if (minutes.length === 1) {
-    minutes = firstTen[minutes];
-  }
-  timezone = timezone.slice(timezone.length - 3);
-  convertedTime = `${dayOfTheWeek}, ${month} ${monthDate}, ${year}, at ${hour}:${minutes} ${ampm} ${timezone}`;
-  return convertedTime;
-}
-
-function convertEpochToClock(epoch, citytimezone, showSeconds) {
-  let convertedTime;
-  let date = new Date(0);
-  date.setUTCSeconds(epoch);
-  let hour = date.toLocaleString('default', { hour: '2-digit', timeZone: citytimezone });
-  let minutes = date.toLocaleString('default', { minute: '2-digit', timeZone: citytimezone });
-  let firstTen = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09'];
-  let seconds = '';
-  let ampm;
-  // replace below with ternary operator
-  if (hour.includes('PM')) {
-    ampm = 'PM';
-  } else {
-    ampm = 'AM';
-  }
-  hour = hour.replace(/\D/g, '');
-  if (hour.startsWith(0)) {
-    hour = hour.slice(1);
-  }
-  if (minutes.length === 1) {
-    minutes = firstTen[minutes];
-  }
-  if (showSeconds) {
-    if (seconds.length === 1) {
-      seconds = `:${firstTen[date.getSeconds()]}`
-    } else {
-      seconds = `:${date.getSeconds()}`;
-    }
-  }
-  convertedTime = `${hour}:${minutes}${seconds} ${ampm}`;
-  return convertedTime;
-}
 
 //client.login(ALTDISCORDTOKEN);
 client.login(DISCORDTOKEN);
