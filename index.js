@@ -1111,7 +1111,8 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                                 if (!setsPingedArray.includes(calledWave[w][s].id)) {
                                                   setsPingedArray.push(calledWave[w][s].id);
                                                   console.log('id added');
-                                                  let endText = `\`${calledWave[w][s].fullRoundText}\` in **${activeEvents[e].name}** has been called! Please check-in on smash.gg.`
+                                                  let quips = ['Please check-in on smash.gg!', 'Get ready to rumble!', 'Round 1, FIGHT!', '3.. 2.. 1.. GO!', 'Choose your character!', 'Start battle!'];
+                                                  let endText = `\`${calledWave[w][s].fullRoundText}\` in **${activeEvents[e].name}** has been called. ${quips[Math.floor(Math.random() * 6)]}`;
 
                                                   let entrantOneMention = replaceall('*', '\\*', calledWave[w][s].slots[0].entrant.participants[0].gamerTag);
                                                   entrantOneMention = replaceall('_', '\\_', entrantOneMention);
@@ -1201,7 +1202,8 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                               if (!setsPingedArray.includes(calledWave[w][s].id)) {
                                                 setsPingedArray.push(calledWave[w][s].id);
                                                 console.log('id added');
-                                                let endText = `\`${calledWave[w][s].fullRoundText}\` in **${activeEvents[e].name}** has been called! Please check-in on smash.gg.`
+                                                let quips = ['Please check-in on smash.gg!', 'Get ready to rumble!', 'Round 1, FIGHT!', '3.. 2.. 1.. GO!', 'Choose your character!', 'Start battle!'];
+                                                let endText = `\`${calledWave[w][s].fullRoundText}\` in **${activeEvents[e].name}** has been called. ${quips[Math.floor(Math.random() * 6)]}`;
 
                                                 let entrantOneMention = replaceall('*', '\\*', calledWave[w][s].slots[0].entrant.participants[0].gamerTag);
                                                 entrantOneMention = replaceall('_', '\\_', entrantOneMention);
@@ -1290,7 +1292,8 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                           if (!setsPingedArray.includes(calledWave[w][s].id)) {
                                             setsPingedArray.push(calledWave[w][s].id);
                                             console.log('id added');
-                                            let endText = `\`${calledWave[w][s].fullRoundText}\` in **${activeEvents[indexEvent].name}** has been called! Please check-in on smash.gg.`
+                                            let quips = ['Please check-in on smash.gg!', 'Get ready to rumble!', 'Round 1, FIGHT!', '3.. 2.. 1.. GO!', 'Choose your character!', 'Start battle!'];
+                                            let endText = `\`${calledWave[w][s].fullRoundText}\` in **${activeEvents[indexEvent].name}** has been called. ${quips[Math.floor(Math.random() * 6)]}`;
 
                                             let entrantOneMention = replaceall('*', '\\*', calledWave[w][s].slots[0].entrant.participants[0].gamerTag);
                                             entrantOneMention = replaceall('_', '\\_', entrantOneMention);
