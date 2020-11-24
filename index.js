@@ -2220,26 +2220,9 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
   }
 
   function sendMessage(specifiedMessage) {
-    let finalMessage = specifiedMessage;
-    // if (message.guild != null) {
-    //   languageModel.find({
-    //     guildid: message.guild.id
-    //   }, function (err, result) {
-    //     if (err) {
-    //       throw err;
-    //     }
-    //     if (result.length) {
-    //       translate(specifiedMessage, { from: 'en', to: result[0].language }).then(text => {
-    //         console.log(text);
-    //       }).catch(err => console.log(err));
-    //     }
-    //   }).catch(err => console.log(err));
-
-    // }
-
     const messageEmbed = new Discord.MessageEmbed()
       .setColor('#FF0000')
-      .setDescription(finalMessage);
+      .setDescription(specifiedMessage);
     message.channel.send(messageEmbed);
   }
 });
