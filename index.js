@@ -69,7 +69,7 @@ client.once('ready', () => {
 // On user joining a Discord server, send message to user
 // client.on('guildMemberAdd', member => {
 //   const welcomeEmbed = new Discord.MessageEmbed()
-//     .setColor('#FF0000')
+//     .setColor('#222326')
 //     .setDescription(`Welcome to ${member.guild.name}! Link your smash.gg account with your Discord account by doing \`t!account link <smash.gg profile URL>\`. You can link in DMs or servers. Do \`t!results\` to test it out!`);
 //   member.send(welcomeEmbed).catch(err => console.log(err));
 // });
@@ -85,7 +85,7 @@ client.on('guildCreate', guild => {
     }
   });
   const joinEmbed = new Discord.MessageEmbed()
-    .setColor('#FF0000')
+    .setColor('#222326')
     .setDescription(`Thank you for inviting me to ${guild.name}! Information on how to use TournaBot can be found here: https://top.gg/bot/719283403698077708.`);
   defaultChannel.send(joinEmbed).catch(err => console.log(err));
   console.log('Added to: ' + guild.name);
@@ -298,7 +298,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                             let fieldArray = [];
                             current.forEach(a => fieldArray.push(a));
                             const embed = new Discord.MessageEmbed()
-                              .setColor('#FF0000')
+                              .setColor('#222326')
                               .setTitle(tournamentName)
                               .setURL(tournamentURL)
                               .addField('User Accounts Linked:', fieldArray.slice(0, 10).join(`
@@ -752,7 +752,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                         sendResults(palette.Vibrant._rgb);
                       }).catch(err => console.log(err));
                     } else {
-                      sendResults('#FF0000');
+                      sendResults('#222326');
                     }
 
                     function sendResults(sideColor) {
@@ -2003,7 +2003,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
 `);
                 }
                 const rolesList = new Discord.MessageEmbed()
-                  .setColor('#FF0000')
+                  .setColor('#222326')
                   .setTitle('Matchmaking')
                   .setDescription(listMessage.join(`
 `))
@@ -2135,7 +2135,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                     backgroundurl = tournamentArray[index][0].images[1].url;
                   }
                   const results = new Discord.MessageEmbed()
-                    .setColor('#FF0000')
+                    .setColor('#222326')
                     .setTitle(tournamentArray[index][0].name)
                     .setURL(`https://smash.gg/${tournamentArray[index][0].slug}`)
                     .setThumbnail(iconurl)
@@ -2203,7 +2203,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
     }).catch(err => console.log(err));
     function generateAndSend(finalMessage) {
       const messageEmbed = new Discord.MessageEmbed()
-        .setColor('#FF0000')
+        .setColor('#222326')
         .setDescription(finalMessage);
       switch (messageType) {
         case 'EMBED':
