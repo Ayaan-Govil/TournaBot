@@ -4,7 +4,7 @@
 
 TournaBot is a Discord bot designed to streamline [smash.gg](https://smash.gg/) tournaments and improve user quality-of-life through specialized commands - built on [Node.js](https://nodejs.org/en/) and [Discord.js](https://discord.js.org/#/).
 
-[TournaBot's top.gg page](https://top.gg/bot/719283403698077708) should contain any information you need related to TournaBot, including the invite link, command info, support/development Discord server, and more.
+[TournaBot's top.gg page](https://top.gg/bot/719283403698077708) should contain any information you need related to TournaBot, including the [invite link](https://discord.com/oauth2/authorize?client_id=719283403698077708&scope=bot&permissions=8), command info, [support/development Discord server](https://discord.gg/ssYPUk6Snc), and more.
 
 ## Table of Contents
 
@@ -30,11 +30,11 @@ TournaBot is a Discord bot designed to streamline [smash.gg](https://smash.gg/) 
 
 - **A better matchmaking system** that takes Discord role-based matchmaking to another level, enabling users to specify whether or not they want to be pinged for a role.
 
-- **Search for tournaments** by game directly in your server.
+- **Search for tournaments** by game directly in your Discord server.
+
+- **Full localization** through custom timezones and languages.
 
 ## Contributing
-
-To add your changes to the project, create a [pull request](https://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project) for this repository. 
 
 ### Running TournaBot Locally
 
