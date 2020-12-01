@@ -1,6 +1,6 @@
 {
   "name": "tournabot",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Streamline smash.gg tournaments and improve user quality-of-life.",
   "main": "index.js",
   "scripts": {
