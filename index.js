@@ -30,7 +30,7 @@ const mmroleModel = require('./database/models/mmrole');
 const announcemessageModel = require('./database/models/announcemessage');
 const pingroleModel = require('./database/models/pingrole');
 const timezoneModel = require('./database/models/timezone');
-//const languageModel = require('./database/models/language');
+const languageModel = require('./database/models/language');
 //const invmsgModel = require('./database/models/invmsg');
 
 // Map used for tracking DQ pinging
@@ -44,6 +44,8 @@ const dqPingingMap = new Map();
 
 // TODO:
 /*
+- Take a sweep through my own code and rework/improve everything
+- Fix formatting errors and HTML entities in localization
 - move commands to folder with each file corresponding to the command
 - come up with more discord -> smash.gg integrations
 - ping both players on a team for doubles instead of one
@@ -61,8 +63,17 @@ client.once('ready', () => {
   console.log(`Ready at ${functions.convertEpochToClock(Date.now() / 1000, 'America/Los_Angeles', true)}`);
   database.then(() => console.log('Connected to MongoDB')).catch(err => console.log(err));
   client.user.setActivity('for t!help', { type: 'WATCHING' });
+  // fetch(`https://api.mymemory.translated.net/get?q=Hello World!&langpair=en|haw&de=random@gmail.com`)
+  //   .then(res => res.json())
+  //   .then(json => {
+  //     console.log(json.responseData.translatedText)
+  //     if (json.responseData.translatedText.toUpperCase() != json.responseData.translatedText) {
+  //       console.log(json.responseData.translatedText)
+  //     }
+  //   }).catch(err => console.log(err));
 });
 
+// Not sending join message to each user until bot becomes verified
 // On user joining a Discord server, send message to user
 // client.on('guildMemberAdd', member => {
 //   const welcomeEmbed = new Discord.MessageEmbed()
@@ -83,7 +94,7 @@ client.on('guildCreate', guild => {
   });
   const joinEmbed = new Discord.MessageEmbed()
     .setColor('#FF0000')
-    .setDescription(`Thank you for inviting me to ${guild.name}! Information on how to use TournaBot can be found here https://top.gg/bot/719283403698077708.`);
+    .setDescription(`Thank you for inviting me to ${guild.name}! Information on how to use TournaBot can be found here: https://top.gg/bot/719283403698077708.`);
   defaultChannel.send(joinEmbed).catch(err => console.log(err));
   console.log('Added to: ' + guild.name);
 });
@@ -100,8 +111,8 @@ client.on('message', message => {
 
   // try {
   //   client.commands.get(command).execute(message, args);
-  // } catch (error) {
-  //   console.error(error);
+  // } catch (err) {
+  //   console.log(err);
   //   //message.reply('there was an error trying to execute that command!');
   // }
 
@@ -135,9 +146,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
               accountModel.find({
                 discordid: discordID
               }, function (err, result) {
-                if (err) {
-                  throw err;
-                }
+                if (err) throw err;
                 if (result.length) {
                   accountModel.replaceOne({
                     discordid: discordID
@@ -147,10 +156,8 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                     profileslug: accountSlug
                   },
                     function (err, result) {
-                      if (err) {
-                        throw err;
-                      }
-                      message.reply('**your accounts have been re-linked!**');
+                      if (err) throw err;
+                      sendMessage('**your accounts have been re-linked!**', 'REPLY');
                       console.log(`re-linked ${discordTag}`);
                     }).catch(err => console.log(err));
                 } else {
@@ -158,7 +165,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                     discordtag: discordTag,
                     discordid: discordID,
                     profileslug: accountSlug
-                  }).save().then(result => message.reply('**your Discord account and smash.gg account are now linked!**'), console.log(`linked ${discordTag}`)).catch(err => console.log(err));
+                  }).save().then(result => sendMessage('your Discord account and smash.gg account are now linked!', 'REPLY'), console.log(`linked ${discordTag}`)).catch(err => console.log(err));
                 }
               }).catch(err => console.log(err));
             } else { sendMessage('I could not recognize the profile URL. Do \`t!help\` to get command info.') }
@@ -171,14 +178,12 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
           accountModel.findOneAndDelete({
             discordid: discordID
           }, function (err, result) {
-            if (err) {
-              throw err;
-            }
+            if (err) throw err;
             if (result) {
-              message.reply('**your Discord account and smash.gg account have been unlinked.**');
+              sendMessage('your Discord account and smash.gg account have been unlinked.', 'REPLY');
               console.log(`unlinked ${message.author.tag}`);
             } else {
-              message.reply('**your accounts are not currently linked.**');
+              sendMessage('your accounts are not currently linked.', 'REPLY');
             }
           }).catch(err => console.log(err));
           break;
@@ -194,9 +199,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
               if (potentialTag.startsWith('smash.gg/')) {
                 // Find path of short URL and parse URL for slug
                 urllib.request('https://' + potentialTag, function (err, data, res) {
-                  if (err) {
-                    throw err;
-                  }
+                  if (err) throw err;
                   if (!(res.headers.location == undefined)) {
                     let urlslug = res.headers.location.replace('https://smash.gg/tournament/', '');
                     urlslug = urlslug.split('/');
@@ -277,9 +280,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                         accountModel.find({
                           profileslug: { $in: attendeeSlugs }
                         }, function (err, result) {
-                          if (err) {
-                            throw err;
-                          }
+                          if (err) throw err;
                           for (r = 0; r < result.length; r++) {
                             let attendeeName = attendeeInfo.get(result[r].profileslug);
                             attendeeInfo.set(attendeeName, true);
@@ -358,9 +359,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
               accountModel.find({
                 discordtag: potentialTag
               }, function (err, result) {
-                if (err) {
-                  throw err;
-                }
+                if (err) throw err;
                 if (result.length) {
                   sendMessage(`${potentialTag} has linked their accounts! :white_check_mark:`);
                 } else { callBackMessage(); }
@@ -372,9 +371,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
               accountModel.find({
                 discordid: userID
               }, function (err, result) {
-                if (err) {
-                  throw err;
-                }
+                if (err) throw err;
                 if (result.length) {
                   sendMessage(`${potentialTag} has linked their accounts! :white_check_mark:`);
                 } else { callBackMessage(); }
@@ -384,13 +381,11 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
             accountModel.find({
               discordid: message.author.id
             }, function (err, result) {
-              if (err) {
-                throw err;
-              }
+              if (err) throw err;
               potentialTag = 'your Discord account';
               if (result.length) {
-                message.reply('your accounts are linked! :white_check_mark:');
-              } else { message.reply('your accounts are not linked :x:'); }
+                sendMessage('your accounts are linked! :white_check_mark:', 'REPLY');
+              } else { sendMessage('your accounts are not linked :x:', 'REPLY'); }
             }).catch(err => console.log(err));
           }
 
@@ -426,9 +421,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
         accountModel.find({
           discordtag: potentialTag
         }, function (err, result) {
-          if (err) {
-            throw err;
-          }
+          if (err) throw err;
           if (result.length) {
             userslug = result[0].profileslug;
             runResults();
@@ -439,9 +432,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
         accountModel.find({
           discordid: userID
         }, function (err, result) {
-          if (err) {
-            throw err;
-          }
+          if (err) throw err;
           if (result.length) {
             userslug = result[0].profileslug;
             runResults();
@@ -452,9 +443,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
       accountModel.find({
         discordid: message.author.id
       }, function (err, result) {
-        if (err) {
-          throw err;
-        }
+        if (err) throw err;
         potentialTag = 'your Discord account';
         if (result.length) {
           userslug = result[0].profileslug;
@@ -518,18 +507,11 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
             //imageurl = JSON.stringify(imageurl).slice(8, -2);
           }
           let guildID;
-          // replace below with ternary operator
-          if (message.guild === null) {
-            guildID = '';
-          } else {
-            guildID = message.guild.id;
-          }
+          message.guild === null ? guildID = '' : guildID = message.guild.id;
           timezoneModel.find({
             guildid: guildID
           }, function (err, result) {
-            if (err) {
-              throw err;
-            }
+            if (err) throw err;
             if (result.length) {
               cityTimezone = result[0].timezone;
             } else {
@@ -774,9 +756,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                     if (imageurl) {
                       let v = new Vibrant(imageurl);
                       v.getPalette(function (err, palette) {
-                        if (err) {
-                          throw err;
-                        }
+                        if (err) throw err;
                         sendResults(palette.Vibrant._rgb);
                       }).catch(err => console.log(err));
                     } else {
@@ -935,9 +915,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                 if (dqArgs[0].startsWith('smash.gg/')) {
                   // Find path of short URL and parse URL for slug
                   urllib.request('https://' + dqArgs[0], function (err, data, res) {
-                    if (err) {
-                      throw err;
-                    }
+                    if (err) throw err;
                     if (!(res.headers.location == undefined)) {
                       let urlslug = res.headers.location.replace('https://smash.gg/tournament/', '');
                       urlslug = urlslug.split('/');
@@ -946,9 +924,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                       channelModel.find({
                         guildid: `${message.guild.id}dq`
                       }, function (err, result) {
-                        if (err) {
-                          throw err;
-                        }
+                        if (err) throw err;
                         if (result.length) {
                           dqchannel = result[0].channelid;
                         }
@@ -964,9 +940,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                   channelModel.find({
                     guildid: `${message.guild.id}dq`
                   }, function (err, result) {
-                    if (err) {
-                      throw err;
-                    }
+                    if (err) throw err;
                     if (result.length) {
                       dqchannel = result[0].channelid;
                     }
@@ -1155,9 +1129,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                                   accountModel.find({
                                                     profileslug: { $in: [entrantOneSlug, entrantTwoSlug] }
                                                   }, function (err, result) {
-                                                    if (err) {
-                                                      throw err;
-                                                    }
+                                                    if (err) throw err;
                                                     if (result[0]) {
                                                       if (entrantOneSlug === result[0].profileslug) {
                                                         console.log('slugs matched on first');
@@ -1246,9 +1218,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                                 accountModel.find({
                                                   profileslug: { $in: [entrantOneSlug, entrantTwoSlug] }
                                                 }, function (err, result) {
-                                                  if (err) {
-                                                    throw err;
-                                                  }
+                                                  if (err) throw err;
                                                   if (result[0]) {
                                                     if (entrantOneSlug === result[0].profileslug) {
                                                       console.log('slugs matched on first');
@@ -1336,9 +1306,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                             accountModel.find({
                                               profileslug: { $in: [entrantOneSlug, entrantTwoSlug] }
                                             }, function (err, result) {
-                                              if (err) {
-                                                throw err;
-                                              }
+                                              if (err) throw err;
                                               if (result[0]) {
                                                 if (entrantOneSlug === result[0].profileslug) {
                                                   console.log('slugs matched on first');
@@ -1403,7 +1371,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
             sendMessage('I could not recognize the argument provided. Do \`t!help\` to get command info.');
         }
       }
-    } else { message.reply('you don\'t have the permissions for that :sob:'); }
+    } else { sendMessage('you don\'t have the permissions for that :sob:', 'REPLY'); }
   }
 
   // t!set <argument>
@@ -1427,9 +1395,7 @@ Possible Arguments: \`announcemessage <message>\`, \`announcechannel <#channel>\
             announcemessageModel.find({
               guildid: guildID
             }, function (err, result) {
-              if (err) {
-                throw err;
-              }
+              if (err) throw err;
               if (result.length) {
                 tournamentAnnounceMessage = result[0].announcemessage;
               } else {
@@ -1444,9 +1410,7 @@ New Announcement Message: ${setArgs}`);
                 announcemessageModel.find({
                   guildid: guildID
                 }, function (err, result) {
-                  if (err) {
-                    throw err;
-                  }
+                  if (err) throw err;
                   if (result.length) {
                     announcemessageModel.replaceOne({
                       guildid: guildID
@@ -1454,9 +1418,7 @@ New Announcement Message: ${setArgs}`);
                       guildid: guildID,
                       announcemessage: setArgs
                     }, function (err, result) {
-                      if (err) {
-                        throw err;
-                      }
+                      if (err) throw err;
                       console.log(`changed announcement message for ${message.guild.name}`);
                     }).catch(err => console.log(err));
                   } else {
@@ -1470,9 +1432,7 @@ New Announcement Message: ${setArgs}`);
                 announcemessageModel.findOneAndDelete({
                   guildid: guildID
                 }, function (err, result) {
-                  if (err) {
-                    throw err;
-                  }
+                  if (err) throw err;
                   sendMessage(`The announcement message has been reset! :white_check_mark:`);
                 }).catch(err => console.log(err));
               }
@@ -1494,9 +1454,7 @@ New Announcement Message: ${setArgs}`);
                     guildid: guildID,
                     channelid: Channel
                   }, function (err, result) {
-                    if (err) {
-                      throw err;
-                    }
+                    if (err) throw err;
                     if (result.n === 0) {
                       let channelSet = new channelModel({
                         guildid: guildID,
@@ -1524,9 +1482,7 @@ New Announcement Message: ${setArgs}`);
                   channelModel.find({
                     guildid: guildID
                   }, function (err, result) {
-                    if (err) {
-                      throw err;
-                    }
+                    if (err) throw err;
                     if (result.length) {
                       channelModel.replaceOne({
                         guildid: guildID
@@ -1535,9 +1491,7 @@ New Announcement Message: ${setArgs}`);
                         channelid: Channel
                       },
                         function (err, result) {
-                          if (err) {
-                            throw err;
-                          }
+                          if (err) throw err;
                           sendMessage('The DQ pinging channel has been changed! :white_check_mark:');
                         }).catch(err => console.log(err));
                     } else {
@@ -1563,9 +1517,7 @@ New Announcement Message: ${setArgs}`);
                 pingroleModel.find({
                   guildid: guildID
                 }, function (err, result) {
-                  if (err) {
-                    throw err;
-                  }
+                  if (err) throw err;
                   if (result.length) {
                     pingroleModel.replaceOne({
                       guildid: guildID
@@ -1573,9 +1525,7 @@ New Announcement Message: ${setArgs}`);
                       guildid: guildID,
                       role: addedRole
                     }, function (err, result) {
-                      if (err) {
-                        throw err;
-                      }
+                      if (err) throw err;
                       sendMessage(`The announcement pinging role has been changed to ${setArgs} :white_check_mark:`);
                     }).catch(err => console.log(err));
                   } else {
@@ -1590,9 +1540,7 @@ New Announcement Message: ${setArgs}`);
               pingroleModel.findOneAndDelete({
                 guildid: guildID
               }, function (err, result) {
-                if (err) {
-                  throw err;
-                }
+                if (err) throw err;
                 sendMessage(`The announcement pinging role has been reset! :white_check_mark:`);
               }).catch(err => console.log(err));
             } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
@@ -1611,9 +1559,7 @@ New Announcement Message: ${setArgs}`);
                 timezoneModel.find({
                   guildid: guildID
                 }, function (err, result) {
-                  if (err) {
-                    throw err;
-                  }
+                  if (err) throw err;
                   if (result.length) {
                     timezoneModel.replaceOne({
                       guildid: guildID
@@ -1621,9 +1567,7 @@ New Announcement Message: ${setArgs}`);
                       guildid: guildID,
                       timezone: setArgs
                     }, function (err, result) {
-                      if (err) {
-                        throw err;
-                      }
+                      if (err) throw err;
                       sendMessage(`The timezone has been changed to **${newTimezone}** :white_check_mark:`);
                     }).catch(err => console.log(err));
                   } else {
@@ -1644,10 +1588,47 @@ Currently Supported Cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`Amer
               timezoneModel.findOneAndDelete({
                 guildid: guildID
               }, function (err, result) {
-                if (err) {
-                  throw err;
-                }
+                if (err) throw err;
                 sendMessage(`The timezone has been reset to **${newTimezone}** :white_check_mark:`);
+              }).catch(err => console.log(err));
+            } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
+            break;
+
+          // t!set language <language>
+          case 'language':
+            if (setArgs.length === 2) {
+              setArgs.shift();
+              setArgs = setArgs.join('');
+              let languages = ['af', 'sq', 'am', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'bs', 'bg', 'ca', 'ceb', 'zh-cn', 'zh', 'zh-TW', 'co', 'hr', 'cs', 'da', 'nl', 'en', 'eo', 'et', 'fi', 'fr', 'fy', 'gl', 'ka', 'de', 'el', 'gu', 'ht', 'ha', 'haw', 'he', 'iw', 'hi', 'hmn', 'hu', 'is', 'ig', 'id', 'ga', 'it', 'ja', 'jv', 'kn', 'kk', 'km', 'rw', 'ko', 'ku', 'ky', 'lo', 'la', 'lv', 'lt', 'lb', 'mk', 'mg', 'ms', 'ml', 'mt', 'mi', 'mr', 'mn', 'my', 'ne', 'no', 'ny', 'or', 'ps', 'fa', 'pl', 'pt', 'pa', 'ro', 'ru', 'sm', 'gd', 'sr', 'st', 'sn', 'sd', 'si', 'sk', 'sl', 'so', 'es', 'su', 'sw', 'sv', 'tl', 'tg', 'ta', 'tt', 'te', 'th', 'tr', 'tk', 'uk', 'ur', 'ug', 'uz', 'vi', 'cy', 'xh', 'yi', 'yo', 'zu'];
+              if (languages.includes(setArgs)) {
+                languageModel.find({
+                  guildid: guildID
+                }, function (err, result) {
+                  if (err) throw err;
+                  if (result.length) {
+                    languageModel.replaceOne({
+                      guildid: guildID
+                    }, {
+                      guildid: guildID,
+                      language: setArgs
+                    }, function (err, result) {
+                      if (err) throw err;
+                      sendMessage(`The language has been changed to **${setArgs}**.`);
+                    }).catch(err => console.log(err));
+                  } else {
+                    let languageSet = new languageModel({
+                      guildid: guildID,
+                      language: setArgs
+                    }).save().then(result => sendMessage(`The language is now set to **${setArgs}**.`)).catch(err => console.log(err));
+                  }
+                }).catch(err => console.log(err));
+              } else { sendMessage('I could not find or do not support the language provided :sob: . Make sure the language specified is in shorthand format (ISO-639-1 Code). Check this to see which languages/codes are supported: https://cloud.google.com/translate/docs/languages.'); }
+            } else if (setArgs.length === 1) {
+              languageModel.findOneAndDelete({
+                guildid: guildID
+              }, function (err, result) {
+                if (err) throw err;
+                sendMessage(`The language has been reset to **English (en)**.`);
               }).catch(err => console.log(err));
             } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
             break;
@@ -1656,7 +1637,7 @@ Currently Supported Cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`Amer
             sendMessage(`I could not recognize the argument provided. Do \`t!help\` to get command info.`);
         }
       }
-    } else { message.reply('you don\'t have the permissions for that :sob:'); }
+    } else { sendMessage('you don\'t have the permissions for that :sob:', 'REPLY'); }
   }
 
   // t!announce <url> <ping/no ping>
@@ -1669,22 +1650,18 @@ Currently Supported Cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`Amer
         tournamentArgs.shift();
         if (tournamentArgs.length >= 2) {
           if (tournamentArgs[0].startsWith('smash.gg/') || tournamentArgs[0].startsWith('https://smash.gg/tournament/')) {
-            guildID = message.guild.id;
+            let guildID = message.guild.id;
             channelModel.find({
               guildid: guildID
             }, function (err, result) {
-              if (err) {
-                throw err;
-              }
+              if (err) throw err;
               if (result.length) {
-                let announcechannel = result[0].channelid;
-                sendMessage(`Announcing in ${client.channels.cache.get(announcechannel).name}...`);
+                let announcechannel = client.channels.cache.get(result[0].channelid);
+                sendMessage(`Announcing in ${announcechannel.name}...`);
                 if (tournamentArgs[0].startsWith('smash.gg/')) {
                   // Find path of short URL and parse URL for slug
                   urllib.request('https://' + tournamentArgs[0], function (err, data, res) {
-                    if (err) {
-                      throw err;
-                    }
+                    if (err) throw err;
                     if (!(res.headers.location == undefined)) {
                       let urlslug = res.headers.location.replace('https://smash.gg/tournament/', '');
                       urlslug = urlslug.split('/');
@@ -1739,11 +1716,9 @@ Currently Supported Cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`Amer
                         let cityTimezone;
 
                         timezoneModel.find({
-                          guildid: message.guild.id
+                          guildid: guildID
                         }, function (err, result) {
-                          if (err) {
-                            throw err;
-                          }
+                          if (err) throw err;
                           if (result.length) {
                             cityTimezone = result[0].timezone;
                           } else {
@@ -1765,9 +1740,8 @@ Check-in opens at ${functions.convertEpochToClock(events[i].startAt - events[i].
                           announcemessageModel.find({
                             guildid: guildID
                           }, function (err, result) {
-                            if (err) {
-                              throw err;
-                            }
+                            if (err) throw err;
+                            // replace with ternary operator
                             if (result.length) {
                               tournamentAnnounceMessage = result[0].announcemessage;
                             } else {
@@ -1776,38 +1750,56 @@ Check-in opens at ${functions.convertEpochToClock(events[i].startAt - events[i].
                             pingroleModel.find({
                               guildid: guildID
                             }, function (err, result) {
-                              if (err) {
-                                throw err;
-                              }
+                              if (err) throw err;
                               let pingingRole;
+                              // replace with ternary operator
                               if (result.length) {
                                 pingingRole = `<@&${result[0].role}>`;
                               } else {
                                 pingingRole = '@everyone';
                               }
-
                               if (tournamentArgs[1] == 'ping') {
                                 if (tournamentAnnounceMessage === undefined) {
                                   tournamentAnnounceMessage = 'the registration for ' + tournamentname + ' is up:';
                                 }
-                                client.channels.cache.get(announcechannel).send(`${pingingRole}, ${tournamentAnnounceMessage} ${tournamentURL}
-
-Registration closes on ${registrationCloseTime}. 
-
-Events:
-${eventNames.join(``)}`);
+                                sendAnnouncement(true);
                               } else if (tournamentArgs[1] == 'no' && tournamentArgs[2] == 'ping') {
                                 if (tournamentAnnounceMessage === undefined) {
                                   tournamentAnnounceMessage = 'The registration for ' + tournamentname + ' is up:';
                                 }
+                                sendAnnouncement(false);
+                              } else { sendMessage('I could not understand whether to ping or not. Do \`t!help\` to get command info.') }
+                              function sendAnnouncement(ping) {
+                                let finalAnnounceMessage = `${tournamentAnnounceMessage} ${tournamentURL}
 
-                                client.channels.cache.get(announcechannel).send(`${tournamentAnnounceMessage} ${tournamentURL}
-      
 Registration closes on ${registrationCloseTime}. 
 
 Events:
-${eventNames.join(``)}`);
-                              } else { sendMessage('I could not understand whether to ping or not. Do \`t!help\` to get command info.') }
+${eventNames.join(``)}`;
+                                languageModel.find({
+                                  guildid: guildID
+                                }, function (err, result) {
+                                  if (err) throw err;
+                                  if (result.length) {
+                                    fetch(`https://api.mymemory.translated.net/get?q=${fixedEncodeURIComponent(finalAnnounceMessage)}&langpair=en|${result[0].language}&de=random@gmail.com`)
+                                      .then(res => res.json())
+                                      .then(json => {
+                                        let translation;
+                                        ping ? translation = `${pingingRole}, ${json.responseData.translatedText}` : translation = json.responseData.translatedText;
+                                        translation.toUpperCase() != translation ? generateAndSend(translation) : generateAndSend(finalAnnounceMessage);
+                                      }).catch(err => console.log(err));
+                                    function fixedEncodeURIComponent(str) {
+                                      return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
+                                        return '%' + c.charCodeAt(0).toString(16);
+                                      });
+                                    }
+                                  } else { generateAndSend(finalAnnounceMessage); }
+                                }).catch(err => console.log(err));
+                                function generateAndSend(finalMessage) {
+                                  announcechannel.send(finalMessage);
+                                  console.log(`announced in ${message.guild.name}`);
+                                }
+                              }
                             }).catch(err => console.log(err));
                           }).catch(err => console.log(err));
                         }).catch(err => console.log(err));
@@ -1818,11 +1810,12 @@ ${eventNames.join(``)}`);
             }).catch(err => console.log(err));
           } else (sendMessage('I could not recognize the URL provided. Do \`t!help\` to get command info.'));
         } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
-      } else { message.reply('you don\'t have the permissions for that :sob:'); }
+      } else { sendMessage('you don\'t have the permissions for that :sob:', 'REPLY'); }
   }
 
   // t!mm <argument>
   // Matchmaking needs to be completely redone coding-wise
+  // No localization for part of matchmaking due to encoding messing with formatting
   if (message.content.toLowerCase().startsWith(`${PREFIX}mm`)) {
     mmArgs = message.content.split(' ');
     mmArgs.shift();
@@ -1863,9 +1856,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                 mmroleModel.find({
                   guildid: guildID
                 }, function (err, result) {
-                  if (err) {
-                    throw err;
-                  }
+                  if (err) throw err;
                   if (result.length) {
                     mmroleModel.replaceOne({
                       guildid: guildID
@@ -1873,9 +1864,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                       guildid: guildID,
                       role: addedRole
                     }, function (err, result) {
-                      if (err) {
-                        throw err;
-                      }
+                      if (err) throw err;
                       sendMessage(`The matchmaking role has been changed to ${activeRolePing} :white_check_mark:`);
                     }).catch(err => console.log(err));
                   } else {
@@ -1887,7 +1876,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                 }).catch(err => console.log(err));
               }
             } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
-          } else { message.reply('you don\'t have the permissions for that :sob:'); }
+          } else { sendMessage('you don\'t have the permissions for that :sob:', 'REPLY'); }
           break;
 
         // t!mm on
@@ -1895,9 +1884,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
           mmroleModel.find({
             guildid: guildID
           }, function (err, result) {
-            if (err) {
-              throw err;
-            }
+            if (err) throw err;
             if (result.length) {
               activeRole = message.guild.roles.cache.find(role => role.id === result[0].role);
               activeRoleID = activeRole.id;
@@ -1906,9 +1893,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                 mmuserModel.find({
                   roleid: activeRoleID
                 }, function (err, result) {
-                  if (err) {
-                    throw err;
-                  }
+                  if (err) throw err;
                   if (result.length) {
                     userList = result[0].activeusers;
                     var userMatched = false;
@@ -1926,9 +1911,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                         activeusers: userList
                       },
                         function (err, result) {
-                          if (err) {
-                            throw err;
-                          }
+                          if (err) throw err;
                           message.reply(`you are now online for **${activeRoleName}**!`);
                         }).catch(err => console.log(err));
                     } else { message.reply(`you are already online.`); }
@@ -1952,9 +1935,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
           mmroleModel.find({
             guildid: guildID
           }, function (err, result) {
-            if (err) {
-              throw err;
-            }
+            if (err) throw err;
             if (result.length) {
               activeRole = message.guild.roles.cache.find(role => role.id === result[0].role);
               activeRoleID = activeRole.id;
@@ -1963,9 +1944,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                 mmuserModel.find({
                   roleid: activeRoleID
                 }, function (err, result) {
-                  if (err) {
-                    throw err;
-                  }
+                  if (err) throw err;
                   userList = result[0].activeusers;
                   if (userList && userList.length) {
                     var userFound = false;
@@ -1980,9 +1959,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                           activeusers: userList
                         },
                           function (err, result) {
-                            if (err) {
-                              throw err;
-                            }
+                            if (err) throw err;
                             message.reply(`you are now offline for **${activeRoleName}**!`);
                           }).catch(err => console.log(err));
                       }
@@ -2003,9 +1980,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
           mmroleModel.find({
             guildid: guildID
           }, function (err, result) {
-            if (err) {
-              throw err;
-            }
+            if (err) throw err;
             if (result.length) {
               activeRole = message.guild.roles.cache.find(role => role.id === result[0].role);
               activeRoleID = activeRole.id;
@@ -2013,9 +1988,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
               mmuserModel.find({
                 roleid: activeRoleID
               }, function (err, result) {
-                if (err) {
-                  throw err;
-                }
+                if (err) throw err;
                 let listMessage = [];
                 if (result.length) {
                   userList = result[0].activeusers;
@@ -2056,9 +2029,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
           mmroleModel.find({
             guildid: guildID
           }, function (err, result) {
-            if (err) {
-              throw err;
-            }
+            if (err) throw err;
             if (result.length) {
               activeRole = message.guild.roles.cache.find(role => role.id === result[0].role);
               activeRoleID = activeRole.id;
@@ -2067,9 +2038,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                 mmuserModel.find({
                   roleid: activeRoleID
                 }, function (err, result) {
-                  if (err) {
-                    throw err;
-                  }
+                  if (err) throw err;
                   userList = result[0].activeusers;
                   if (userList && userList.length) {
                     message.channel.send(userList.join(' '))
@@ -2216,14 +2185,52 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
               }).catch(err => console.log(err));
           } else { sendMessage(`I could not find the specified game. Do \`t!help\` to get command info.`); }
         } else { sendMessage(`There is no game provided. Do \`t!help\` to get command info.`); }
-      } else { message.reply('you don\'t have the permissions for that :sob:'); }
+      } else { sendMessage('you don\'t have the permissions for that :sob:', 'REPLY'); }
   }
 
-  function sendMessage(specifiedMessage) {
-    const messageEmbed = new Discord.MessageEmbed()
-      .setColor('#FF0000')
-      .setDescription(specifiedMessage);
-    message.channel.send(messageEmbed);
+  function sendMessage(specifiedMessage, messageType) {
+    let guildID;
+    message.guild === null ? guildID = '' : guildID = message.guild.id;
+    languageModel.find({
+      guildid: guildID
+    }, function (err, result) {
+      if (err) throw err;
+      if (result.length) {
+        fetch(`https://api.mymemory.translated.net/get?q=${fixedEncodeURIComponent(specifiedMessage)}&langpair=en|${result[0].language}&de=random@gmail.com`)
+          .then(res => res.json())
+          .then(json => {
+            let translation = json.responseData.translatedText;
+            translation === null ? generateAndSend(specifiedMessage) : translation.toUpperCase() != translation ? generateAndSend(translation) : generateAndSend(specifiedMessage);
+          }).catch(err => console.log(err));
+        function fixedEncodeURIComponent(str) {
+          return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
+            return '%' + c.charCodeAt(0).toString(16);
+          });
+        }
+      } else { generateAndSend(specifiedMessage); }
+    }).catch(err => console.log(err));
+    function generateAndSend(finalMessage) {
+      const messageEmbed = new Discord.MessageEmbed()
+        .setColor('#FF0000')
+        .setDescription(finalMessage);
+      switch (messageType) {
+        case 'EMBED':
+
+          message.channel.send(messageEmbed);
+          break;
+
+        case 'REPLY':
+          message.reply(finalMessage);
+          break;
+
+        case 'SEND':
+          message.channel.send(finalMessage);
+          break;
+
+        default:
+          message.channel.send(messageEmbed);
+      }
+    }
   }
 });
 
