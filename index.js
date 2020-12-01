@@ -63,14 +63,6 @@ client.once('ready', () => {
   console.log(`Ready at ${functions.convertEpochToClock(Date.now() / 1000, 'America/Los_Angeles', true)}`);
   database.then(() => console.log('Connected to MongoDB')).catch(err => console.log(err));
   client.user.setActivity('for t!help', { type: 'WATCHING' });
-  // fetch(`https://api.mymemory.translated.net/get?q=Hello World!&langpair=en|haw&de=random@gmail.com`)
-  //   .then(res => res.json())
-  //   .then(json => {
-  //     console.log(json.responseData.translatedText)
-  //     if (json.responseData.translatedText.toUpperCase() != json.responseData.translatedText) {
-  //       console.log(json.responseData.translatedText)
-  //     }
-  //   }).catch(err => console.log(err));
 });
 
 // Not sending join message to each user until bot becomes verified
