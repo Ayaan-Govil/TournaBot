@@ -496,7 +496,6 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
             } else if (data.data.user.images[1] != undefined) {
               imageurl = data.data.user.images[1].url;
             }
-            //imageurl = JSON.stringify(imageurl).slice(8, -2);
           }
           let guildID;
           message.guild === null ? guildID = '' : guildID = message.guild.id;
@@ -701,11 +700,27 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
 
                                 sets[tIndex].push(`Score: ${finalScore}`);
                                 // Character catch needs to be reworked to be more accurate
-                                let setsCharLength = 700;
+                                let setsCharLength = 800;
                                 if ((charactersPlayed[0].length === 0) && (charactersPlayed[1].length === 0)) {
                                   setsCharLength = 400;
                                 }
-                                if (sets[t].join().length >= setsCharLength) {
+                                if (sets[tIndex].join('\n').length + 13 >= setsCharLength) {
+                                  doubleCheckCount();
+                                  function doubleCheckCount() {
+                                    if (sets[tIndex].join('\n').length > 1000) {
+                                      console.log(sets[tIndex])
+                                      sets[tIndex].pop();
+                                      if (sets[tIndex][sets[tIndex].length - 1].startsWith('*For ')) {
+                                        sets[tIndex].pop();
+                                      }
+                                      if (sets[tIndex][sets[tIndex].length - 1] === '*And more...*') {
+                                        sets[tIndex].pop();
+                                      }
+                                      console.log(sets[tIndex])
+                                      console.log(`pushed out set for count: ${sets[tIndex].join('\n').length}`);
+                                      doubleCheckCount();
+                                    }
+                                  }
                                   sets[tIndex].push('*And more...*');
                                   s = setsdone.length;
                                 }
