@@ -45,14 +45,13 @@ const dqPingingMap = new Map();
 // TODO:
 /*
 - Take a sweep through my own code and rework/improve everything
-- Fix formatting errors and HTML entities in localization
+- Fix formatting errors and HTML entities in localization (will take a lot more testing and time than others)
 - move commands to folder with each file corresponding to the command
-- come up with more discord -> smash.gg integrations
 - ping both players on a team for doubles instead of one
-- sets on player command
+- come up with more discord -> smash.gg integrations
+- sets on player command (once API functionality is fixed)
 - pages for mm list
 - add tournabots own results 
-- add more tournament streamlining commands
 - improve efficiency and readability
 */
 
@@ -157,7 +156,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                     discordtag: discordTag,
                     discordid: discordID,
                     profileslug: accountSlug
-                  }).save().then(result => sendMessage('your Discord account and smash.gg account are now linked!', 'REPLY'), console.log(`linked ${discordTag}`)).catch(err => console.log(err));
+                  }).save().then(result => sendMessage('**your Discord account and smash.gg account are now linked!**', 'REPLY'), console.log(`linked ${discordTag}`)).catch(err => console.log(err));
                 }
               }).catch(err => console.log(err));
             } else { sendMessage('I could not recognize the profile URL. Do \`t!help\` to get command info.') }
@@ -172,10 +171,10 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
           }, function (err, result) {
             if (err) throw err;
             if (result) {
-              sendMessage('your Discord account and smash.gg account have been unlinked.', 'REPLY');
+              sendMessage('**your Discord account and smash.gg account have been unlinked.**', 'REPLY');
               console.log(`unlinked ${message.author.tag}`);
             } else {
-              sendMessage('your accounts are not currently linked.', 'REPLY');
+              sendMessage('**your accounts are not currently linked.**', 'REPLY');
             }
           }).catch(err => console.log(err));
           break;
@@ -191,7 +190,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
               if (potentialTag.startsWith('smash.gg/')) {
                 // Find path of short URL and parse URL for slug
                 urllib.request('https://' + potentialTag, function (err, data, res) {
-                  if (err) throw err;
+                  if (err) console.log(err);
                   if (!(res.headers.location == undefined)) {
                     let urlslug = res.headers.location.replace('https://smash.gg/tournament/', '');
                     urlslug = urlslug.split('/');
@@ -396,8 +395,8 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
   if (message.content.toLowerCase().startsWith(`${PREFIX}results`)) {
     // NEEDS TO BE REFORMED USING WHILE LOOP AND DOING CHECKS ON DATA AFTER SORTING
     // TODO FOR RESULTS:
-    // add steve emoji
-    // typed characters catch for events
+    // use empty character to push set information to third inline column
+    // character catch for events
     // more testing (round robin, ladder, etc.)
     // *search for anyones results by keyword
     // compare admin list to user and use variables to query more tournaments for filtering out TO'd tournaments
@@ -494,7 +493,11 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
             if (data.data.user.images[0].height === data.data.user.images[0].width) {
               imageurl = data.data.user.images[0].url;
             } else if (data.data.user.images[1] != undefined) {
-              imageurl = data.data.user.images[1].url;
+              if ((data.data.user.images[0].height < data.data.user.images[1].height) && (data.data.user.images[0].width < data.data.user.images[1].width)) {
+                imageurl = data.data.user.images[0].url;
+              } else {
+                imageurl = data.data.user.images[1].url;
+              }
             }
           }
           let guildID;
@@ -708,7 +711,6 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                                   doubleCheckCount();
                                   function doubleCheckCount() {
                                     if (sets[tIndex].join('\n').length > 1000) {
-                                      console.log(sets[tIndex])
                                       sets[tIndex].pop();
                                       if (sets[tIndex][sets[tIndex].length - 1].startsWith('*For ')) {
                                         sets[tIndex].pop();
@@ -716,7 +718,6 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                                       if (sets[tIndex][sets[tIndex].length - 1] === '*And more...*') {
                                         sets[tIndex].pop();
                                       }
-                                      console.log(sets[tIndex])
                                       console.log(`pushed out set for count: ${sets[tIndex].join('\n').length}`);
                                       doubleCheckCount();
                                     }
@@ -760,6 +761,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                 if (!recursing) {
                   if (tIndex > -1) {
                     // Search profile picture for most vibrant color then send data to user
+                    // Rework algorithm to use pixel density and other factors to get more appealing colors
                     if (imageurl) {
                       let v = new Vibrant(imageurl);
                       v.getPalette(function (err, palette) {
@@ -922,7 +924,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                 if (dqArgs[0].startsWith('smash.gg/')) {
                   // Find path of short URL and parse URL for slug
                   urllib.request('https://' + dqArgs[0], function (err, data, res) {
-                    if (err) throw err;
+                    if (err) console.log(err);
                     if (!(res.headers.location == undefined)) {
                       let urlslug = res.headers.location.replace('https://smash.gg/tournament/', '');
                       urlslug = urlslug.split('/');
@@ -1345,8 +1347,8 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                           } else {
                             clearInterval(dqPingingMap.get(message.guild.id));
                             dqPingingMap.delete(message.guild.id);
-                            sendMessage('Stopping DQ pinging - automatically end DQ pinging after 6 hours.');
-                            console.log(`auto stopped after 6 hours in ${message.guild.name}`);
+                            sendMessage('Stopping DQ pinging - automatically end DQ pinging after six hours.');
+                            console.log(`auto stopped after six hours in ${message.guild.name}`);
                           }
                         } else {
                           clearInterval(dqPingingMap.get(message.guild.id));
@@ -1443,7 +1445,7 @@ New Announcement Message: ${setArgs}`);
                   sendMessage(`The announcement message has been reset! :white_check_mark:`);
                 }).catch(err => console.log(err));
               }
-            });
+            }).catch(err => console.log(err));
             break;
 
           // t!set announcechannel <#channel>
@@ -1668,7 +1670,7 @@ Currently Supported Cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`Amer
                 if (tournamentArgs[0].startsWith('smash.gg/')) {
                   // Find path of short URL and parse URL for slug
                   urllib.request('https://' + tournamentArgs[0], function (err, data, res) {
-                    if (err) throw err;
+                    if (err) console.log(err);
                     if (!(res.headers.location == undefined)) {
                       let urlslug = res.headers.location.replace('https://smash.gg/tournament/', '');
                       urlslug = urlslug.split('/');
@@ -1800,7 +1802,12 @@ ${eventNames.join(``)}`;
                                         return '%' + c.charCodeAt(0).toString(16);
                                       });
                                     }
-                                  } else { generateAndSend(finalAnnounceMessage); }
+                                  } else {
+                                    if (ping) {
+                                      finalAnnounceMessage = `${pingingRole}, ${finalAnnounceMessage}`;
+                                    }
+                                    generateAndSend(finalAnnounceMessage);
+                                  }
                                 }).catch(err => console.log(err));
                                 function generateAndSend(finalMessage) {
                                   announcechannel.send(finalMessage);
@@ -1811,7 +1818,7 @@ ${eventNames.join(``)}`;
                           }).catch(err => console.log(err));
                         }).catch(err => console.log(err));
                       } else { sendMessage(`I could not find the specified tournament. Do \`t!help\` to get command info.`); }
-                    });
+                    }).catch(err => console.log(err));
                 }
               } else { sendMessage('There is no announcement channel set. Do \`t!help\` to get command info.'); }
             }).catch(err => console.log(err));
