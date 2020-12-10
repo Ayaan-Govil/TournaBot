@@ -1001,36 +1001,40 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                     })
                       .then(r => r.json())
                       .then(data => {
-                        tournamentEnd = data.data.tournament.endAt * 1000;
-                        console.log('tournament end: ' + tournamentEnd);
-                        console.log('current time: ' + Date.now());
-                        console.log(data.data.tournament.events[indexEvent])
-                        if (!(data.data.tournament.events[indexEvent] == undefined)) {
-                          console.log('filtering by index');
-                          pingEvent = true;
-                        }
-                        eventsTotal = 0;
-                        for (d = 0; d < data.data.tournament.events.length; d++) {
-                          if (Date.now() < data.data.tournament.events[d].startAt * 1000) {
-                            eventsTotal++;
-                            if (eventsTotal === data.data.tournament.events.length) {
-                              tournamentStarted = false;
-                              console.log('tournament has not started');
+                        if (data.data.tournament != null) {
+                          tournamentEnd = data.data.tournament.endAt * 1000;
+                          console.log('tournament end: ' + tournamentEnd);
+                          console.log('current time: ' + Date.now());
+                          console.log(data.data.tournament.events[indexEvent])
+                          if (!(data.data.tournament.events[indexEvent] == undefined)) {
+                            console.log('filtering by index');
+                            pingEvent = true;
+                          }
+                          eventsTotal = 0;
+                          for (d = 0; d < data.data.tournament.events.length; d++) {
+                            if (Date.now() < data.data.tournament.events[d].startAt * 1000) {
+                              eventsTotal++;
+                              if (eventsTotal === data.data.tournament.events.length) {
+                                tournamentStarted = false;
+                                console.log('tournament has not started');
+                              }
+                            }
+                            if (data.data.tournament.events[d].name.toLowerCase() === potentialEventName.toLowerCase()) {
+                              filterByName = true;
+                              console.log('filtering by name');
                             }
                           }
-                          if (data.data.tournament.events[d].name.toLowerCase() === potentialEventName.toLowerCase()) {
-                            filterByName = true;
-                            console.log('filtering by name');
-                          }
-                        }
+                          DQLoop();
+                        } else { sendMessage('I could not find any tournament data from the URL provided :confused: . Do \`t!help\` to get command info.'); }
                       }).catch(err => console.log(err));
-                    var setsPingedArray = [];
-                    // Step a + 6
-                    if (tournamentStarted) {
-                      dqPingingMap.set(message.guild.id, setInterval(function () {
-                        if (Date.now() < tournamentEnd) {
-                          if (Date.now() < autoStop) {
-                            query = `query EventSets($slug: String) {
+                    function DQLoop() {
+                      var setsPingedArray = [];
+                      // Step a + 6
+                      if (tournamentStarted) {
+                        dqPingingMap.set(message.guild.id, setInterval(function () {
+                          if (Date.now() < tournamentEnd) {
+                            if (Date.now() < autoStop) {
+                              query = `query EventSets($slug: String) {
                                     tournament(slug: $slug) {
                                       events {
                                         name
@@ -1060,28 +1064,117 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                     } 
                                   }`;
 
-                            fetch('https://api.smash.gg/gql/alpha', {
-                              method: 'POST',
-                              headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                                'Authorization': 'Bearer ' + SMASHGGTOKEN
-                              },
-                              body: JSON.stringify({
-                                query,
-                                variables: { slug },
+                              fetch('https://api.smash.gg/gql/alpha', {
+                                method: 'POST',
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  'Accept': 'application/json',
+                                  'Authorization': 'Bearer ' + SMASHGGTOKEN
+                                },
+                                body: JSON.stringify({
+                                  query,
+                                  variables: { slug },
+                                })
                               })
-                            })
-                              .then(r => r.json())
-                              .then(data => {
-                                // STEPS b-f
-                                let activeEvents = data.data.tournament.events
-                                if (!pingEvent) {
+                                .then(r => r.json())
+                                .then(data => {
+                                  // STEPS b-f
+                                  let activeEvents = data.data.tournament.events
+                                  if (!pingEvent) {
 
-                                  // EVENT NAME
-                                  if (filterByName) {
-                                    for (e = 0; e < activeEvents.length; e++) {
-                                      if (activeEvents[e].name.toLowerCase() === potentialEventName.toLowerCase()) {
+                                    // EVENT NAME
+                                    if (filterByName) {
+                                      for (e = 0; e < activeEvents.length; e++) {
+                                        if (activeEvents[e].name.toLowerCase() === potentialEventName.toLowerCase()) {
+                                          let calledWave = [activeEvents[e].sets.nodes];
+                                          if (!(calledWave == undefined)) {
+                                            for (w = 0; w < calledWave.length; w++) {
+                                              //console.log('wave found');
+                                              if (calledWave[w] === null) {
+                                                console.log('no dq timers');
+                                              } else {
+                                                for (s = 0; s < calledWave[w].length; s++) {
+                                                  console.log('set found');
+                                                  if (!setsPingedArray.includes(calledWave[w][s].id)) {
+                                                    setsPingedArray.push(calledWave[w][s].id);
+                                                    console.log('id added');
+                                                    let quips = ['Please check-in on smash.gg!', 'Get ready to rumble!', 'Round 1, FIGHT!', '3.. 2.. 1.. GO!', 'Choose your character!', 'Start battle!'];
+                                                    let endText = `\`${calledWave[w][s].fullRoundText}\` in **${activeEvents[e].name}** has been called. ${quips[Math.floor(Math.random() * 6)]}`;
+
+                                                    let entrantOneMention = replaceall('*', '\\*', calledWave[w][s].slots[0].entrant.participants[0].gamerTag);
+                                                    entrantOneMention = replaceall('_', '\\_', entrantOneMention);
+                                                    entrantOneMention = `**${entrantOneMention}**`;
+                                                    let entrantOneSlug = '';
+                                                    if (!(calledWave[w][s].slots[0].entrant.participants[0].user === null)) {
+                                                      entrantOneSlug = calledWave[w][s].slots[0].entrant.participants[0].user.slug.replace('user/', '');
+                                                      let entrantOneAccounts = calledWave[w][s].slots[0].entrant.participants[0].user.authorizations;
+                                                      if (!(entrantOneAccounts === null)) {
+                                                        for (d = 0; d < entrantOneAccounts.length; d++) {
+                                                          if (entrantOneAccounts[d].type === 'DISCORD') {
+                                                            let userID = message.guild.members.cache.filter(member => member.user.tag === entrantOneAccounts[d].externalUsername).map(member => member.user.id);
+                                                            if (!(userID[0] === undefined)) {
+                                                              entrantOneMention = `<@${userID[0]}>`;
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+
+                                                    let entrantTwoMention = replaceall('*', '\\*', calledWave[w][s].slots[1].entrant.participants[0].gamerTag);
+                                                    entrantTwoMention = replaceall('_', '\\_', entrantTwoMention);
+                                                    entrantTwoMention = `**${entrantTwoMention}**`;
+                                                    let entrantTwoSlug = '';
+                                                    if (!(calledWave[w][s].slots[1].entrant.participants[0].user === null)) {
+                                                      entrantTwoSlug = calledWave[w][s].slots[1].entrant.participants[0].user.slug.replace('user/', '');
+                                                      let entrantTwoAccounts = calledWave[w][s].slots[1].entrant.participants[0].user.authorizations;
+                                                      if (!(entrantTwoAccounts === null)) {
+                                                        for (d = 0; d < entrantTwoAccounts.length; d++) {
+                                                          if (entrantTwoAccounts[d].type === 'DISCORD') {
+                                                            let userID = message.guild.members.cache.filter(member => member.user.tag === entrantTwoAccounts[d].externalUsername).map(member => member.user.id);
+                                                            if (!(userID[0] === undefined)) {
+                                                              entrantTwoMention = `<@${userID[0]}>`;
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+
+                                                    accountModel.find({
+                                                      profileslug: { $in: [entrantOneSlug, entrantTwoSlug] }
+                                                    }, function (err, result) {
+                                                      if (err) throw err;
+                                                      if (result[0]) {
+                                                        if (entrantOneSlug === result[0].profileslug) {
+                                                          console.log('slugs matched on first');
+                                                          entrantOneMention = `<@${result[0].discordid}>`;
+                                                        } else {
+                                                          console.log('slugs matched on second');
+                                                          entrantTwoMention = `<@${result[0].discordid}>`;
+                                                        }
+                                                      }
+
+                                                      if (result[1]) {
+                                                        if (entrantOneSlug === result[1].profileslug) {
+                                                          console.log('slugs matched on first');
+                                                          entrantOneMention = `<@${result[1].discordid}>`;
+                                                        } else {
+                                                          console.log('slugs matched on second');
+                                                          entrantTwoMention = `<@${result[1].discordid}>`;
+                                                        }
+                                                      }
+                                                      dqchannel.send(`${entrantOneMention} and ${entrantTwoMention}, your match for ${endText}`).catch(err => console.log(err));
+                                                    }).catch(err => console.log(err));
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+
+                                      // ALL EVENTS
+                                    } else {
+                                      for (e = 0; e < activeEvents.length; e++) {
                                         let calledWave = [activeEvents[e].sets.nodes];
                                         if (!(calledWave == undefined)) {
                                           for (w = 0; w < calledWave.length; w++) {
@@ -1168,196 +1261,108 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                       }
                                     }
 
-                                    // ALL EVENTS
+                                    // EVENT NUMBER
                                   } else {
-                                    for (e = 0; e < activeEvents.length; e++) {
-                                      let calledWave = [activeEvents[e].sets.nodes];
-                                      if (!(calledWave == undefined)) {
-                                        for (w = 0; w < calledWave.length; w++) {
-                                          //console.log('wave found');
-                                          if (calledWave[w] === null) {
-                                            console.log('no dq timers');
-                                          } else {
-                                            for (s = 0; s < calledWave[w].length; s++) {
-                                              console.log('set found');
-                                              if (!setsPingedArray.includes(calledWave[w][s].id)) {
-                                                setsPingedArray.push(calledWave[w][s].id);
-                                                console.log('id added');
-                                                let quips = ['Please check-in on smash.gg!', 'Get ready to rumble!', 'Round 1, FIGHT!', '3.. 2.. 1.. GO!', 'Choose your character!', 'Start battle!'];
-                                                let endText = `\`${calledWave[w][s].fullRoundText}\` in **${activeEvents[e].name}** has been called. ${quips[Math.floor(Math.random() * 6)]}`;
+                                    let calledWave = [activeEvents[indexEvent].sets.nodes];
+                                    if (!(calledWave == undefined)) {
+                                      for (w = 0; w < calledWave.length; w++) {
+                                        //console.log('wave found');
+                                        if (calledWave[w] === null) {
+                                          console.log('no dq timers');
+                                        } else {
+                                          for (s = 0; s < calledWave[w].length; s++) {
+                                            console.log('set found');
+                                            if (!setsPingedArray.includes(calledWave[w][s].id)) {
+                                              setsPingedArray.push(calledWave[w][s].id);
+                                              console.log('id added');
+                                              let quips = ['Please check-in on smash.gg!', 'Get ready to rumble!', 'Round 1, FIGHT!', '3.. 2.. 1.. GO!', 'Choose your character!', 'Start battle!'];
+                                              let endText = `\`${calledWave[w][s].fullRoundText}\` in **${activeEvents[indexEvent].name}** has been called. ${quips[Math.floor(Math.random() * 6)]}`;
 
-                                                let entrantOneMention = replaceall('*', '\\*', calledWave[w][s].slots[0].entrant.participants[0].gamerTag);
-                                                entrantOneMention = replaceall('_', '\\_', entrantOneMention);
-                                                entrantOneMention = `**${entrantOneMention}**`;
-                                                let entrantOneSlug = '';
-                                                if (!(calledWave[w][s].slots[0].entrant.participants[0].user === null)) {
-                                                  entrantOneSlug = calledWave[w][s].slots[0].entrant.participants[0].user.slug.replace('user/', '');
-                                                  let entrantOneAccounts = calledWave[w][s].slots[0].entrant.participants[0].user.authorizations;
-                                                  if (!(entrantOneAccounts === null)) {
-                                                    for (d = 0; d < entrantOneAccounts.length; d++) {
-                                                      if (entrantOneAccounts[d].type === 'DISCORD') {
-                                                        let userID = message.guild.members.cache.filter(member => member.user.tag === entrantOneAccounts[d].externalUsername).map(member => member.user.id);
-                                                        if (!(userID[0] === undefined)) {
-                                                          entrantOneMention = `<@${userID[0]}>`;
-                                                        }
+                                              let entrantOneMention = replaceall('*', '\\*', calledWave[w][s].slots[0].entrant.participants[0].gamerTag);
+                                              entrantOneMention = replaceall('_', '\\_', entrantOneMention);
+                                              entrantOneMention = `**${entrantOneMention}**`;
+                                              let entrantOneSlug = '';
+                                              if (!(calledWave[w][s].slots[0].entrant.participants[0].user === null)) {
+                                                entrantOneSlug = calledWave[w][s].slots[0].entrant.participants[0].user.slug.replace('user/', '');
+                                                let entrantOneAccounts = calledWave[w][s].slots[0].entrant.participants[0].user.authorizations;
+                                                if (!(entrantOneAccounts === null)) {
+                                                  for (d = 0; d < entrantOneAccounts.length; d++) {
+                                                    if (entrantOneAccounts[d].type === 'DISCORD') {
+                                                      let userID = message.guild.members.cache.filter(member => member.user.tag === entrantOneAccounts[d].externalUsername).map(member => member.user.id);
+                                                      if (!(userID[0] === undefined)) {
+                                                        entrantOneMention = `<@${userID[0]}>`;
                                                       }
                                                     }
                                                   }
                                                 }
-
-                                                let entrantTwoMention = replaceall('*', '\\*', calledWave[w][s].slots[1].entrant.participants[0].gamerTag);
-                                                entrantTwoMention = replaceall('_', '\\_', entrantTwoMention);
-                                                entrantTwoMention = `**${entrantTwoMention}**`;
-                                                let entrantTwoSlug = '';
-                                                if (!(calledWave[w][s].slots[1].entrant.participants[0].user === null)) {
-                                                  entrantTwoSlug = calledWave[w][s].slots[1].entrant.participants[0].user.slug.replace('user/', '');
-                                                  let entrantTwoAccounts = calledWave[w][s].slots[1].entrant.participants[0].user.authorizations;
-                                                  if (!(entrantTwoAccounts === null)) {
-                                                    for (d = 0; d < entrantTwoAccounts.length; d++) {
-                                                      if (entrantTwoAccounts[d].type === 'DISCORD') {
-                                                        let userID = message.guild.members.cache.filter(member => member.user.tag === entrantTwoAccounts[d].externalUsername).map(member => member.user.id);
-                                                        if (!(userID[0] === undefined)) {
-                                                          entrantTwoMention = `<@${userID[0]}>`;
-                                                        }
-                                                      }
-                                                    }
-                                                  }
-                                                }
-
-                                                accountModel.find({
-                                                  profileslug: { $in: [entrantOneSlug, entrantTwoSlug] }
-                                                }, function (err, result) {
-                                                  if (err) throw err;
-                                                  if (result[0]) {
-                                                    if (entrantOneSlug === result[0].profileslug) {
-                                                      console.log('slugs matched on first');
-                                                      entrantOneMention = `<@${result[0].discordid}>`;
-                                                    } else {
-                                                      console.log('slugs matched on second');
-                                                      entrantTwoMention = `<@${result[0].discordid}>`;
-                                                    }
-                                                  }
-
-                                                  if (result[1]) {
-                                                    if (entrantOneSlug === result[1].profileslug) {
-                                                      console.log('slugs matched on first');
-                                                      entrantOneMention = `<@${result[1].discordid}>`;
-                                                    } else {
-                                                      console.log('slugs matched on second');
-                                                      entrantTwoMention = `<@${result[1].discordid}>`;
-                                                    }
-                                                  }
-                                                  dqchannel.send(`${entrantOneMention} and ${entrantTwoMention}, your match for ${endText}`).catch(err => console.log(err));
-                                                }).catch(err => console.log(err));
                                               }
+
+                                              let entrantTwoMention = replaceall('*', '\\*', calledWave[w][s].slots[1].entrant.participants[0].gamerTag);
+                                              entrantTwoMention = replaceall('_', '\\_', entrantTwoMention);
+                                              entrantTwoMention = `**${entrantTwoMention}**`;
+                                              let entrantTwoSlug = '';
+                                              if (!(calledWave[w][s].slots[1].entrant.participants[0].user === null)) {
+                                                entrantTwoSlug = calledWave[w][s].slots[1].entrant.participants[0].user.slug.replace('user/', '');
+                                                let entrantTwoAccounts = calledWave[w][s].slots[1].entrant.participants[0].user.authorizations;
+                                                if (!(entrantTwoAccounts === null)) {
+                                                  for (d = 0; d < entrantTwoAccounts.length; d++) {
+                                                    if (entrantTwoAccounts[d].type === 'DISCORD') {
+                                                      let userID = message.guild.members.cache.filter(member => member.user.tag === entrantTwoAccounts[d].externalUsername).map(member => member.user.id);
+                                                      if (!(userID[0] === undefined)) {
+                                                        entrantTwoMention = `<@${userID[0]}>`;
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+
+                                              accountModel.find({
+                                                profileslug: { $in: [entrantOneSlug, entrantTwoSlug] }
+                                              }, function (err, result) {
+                                                if (err) throw err;
+                                                if (result[0]) {
+                                                  if (entrantOneSlug === result[0].profileslug) {
+                                                    console.log('slugs matched on first');
+                                                    entrantOneMention = `<@${result[0].discordid}>`;
+                                                  } else {
+                                                    console.log('slugs matched on second');
+                                                    entrantTwoMention = `<@${result[0].discordid}>`;
+                                                  }
+                                                }
+
+                                                if (result[1]) {
+                                                  if (entrantOneSlug === result[1].profileslug) {
+                                                    console.log('slugs matched on first');
+                                                    entrantOneMention = `<@${result[1].discordid}>`;
+                                                  } else {
+                                                    console.log('slugs matched on second');
+                                                    entrantTwoMention = `<@${result[1].discordid}>`;
+                                                  }
+                                                }
+                                                dqchannel.send(`${entrantOneMention} and ${entrantTwoMention}, your match for ${endText}`).catch(err => console.log(err));
+                                              }).catch(err => console.log(err));
                                             }
                                           }
                                         }
                                       }
                                     }
                                   }
-
-                                  // EVENT NUMBER
-                                } else {
-                                  let calledWave = [activeEvents[indexEvent].sets.nodes];
-                                  if (!(calledWave == undefined)) {
-                                    for (w = 0; w < calledWave.length; w++) {
-                                      //console.log('wave found');
-                                      if (calledWave[w] === null) {
-                                        console.log('no dq timers');
-                                      } else {
-                                        for (s = 0; s < calledWave[w].length; s++) {
-                                          console.log('set found');
-                                          if (!setsPingedArray.includes(calledWave[w][s].id)) {
-                                            setsPingedArray.push(calledWave[w][s].id);
-                                            console.log('id added');
-                                            let quips = ['Please check-in on smash.gg!', 'Get ready to rumble!', 'Round 1, FIGHT!', '3.. 2.. 1.. GO!', 'Choose your character!', 'Start battle!'];
-                                            let endText = `\`${calledWave[w][s].fullRoundText}\` in **${activeEvents[indexEvent].name}** has been called. ${quips[Math.floor(Math.random() * 6)]}`;
-
-                                            let entrantOneMention = replaceall('*', '\\*', calledWave[w][s].slots[0].entrant.participants[0].gamerTag);
-                                            entrantOneMention = replaceall('_', '\\_', entrantOneMention);
-                                            entrantOneMention = `**${entrantOneMention}**`;
-                                            let entrantOneSlug = '';
-                                            if (!(calledWave[w][s].slots[0].entrant.participants[0].user === null)) {
-                                              entrantOneSlug = calledWave[w][s].slots[0].entrant.participants[0].user.slug.replace('user/', '');
-                                              let entrantOneAccounts = calledWave[w][s].slots[0].entrant.participants[0].user.authorizations;
-                                              if (!(entrantOneAccounts === null)) {
-                                                for (d = 0; d < entrantOneAccounts.length; d++) {
-                                                  if (entrantOneAccounts[d].type === 'DISCORD') {
-                                                    let userID = message.guild.members.cache.filter(member => member.user.tag === entrantOneAccounts[d].externalUsername).map(member => member.user.id);
-                                                    if (!(userID[0] === undefined)) {
-                                                      entrantOneMention = `<@${userID[0]}>`;
-                                                    }
-                                                  }
-                                                }
-                                              }
-                                            }
-
-                                            let entrantTwoMention = replaceall('*', '\\*', calledWave[w][s].slots[1].entrant.participants[0].gamerTag);
-                                            entrantTwoMention = replaceall('_', '\\_', entrantTwoMention);
-                                            entrantTwoMention = `**${entrantTwoMention}**`;
-                                            let entrantTwoSlug = '';
-                                            if (!(calledWave[w][s].slots[1].entrant.participants[0].user === null)) {
-                                              entrantTwoSlug = calledWave[w][s].slots[1].entrant.participants[0].user.slug.replace('user/', '');
-                                              let entrantTwoAccounts = calledWave[w][s].slots[1].entrant.participants[0].user.authorizations;
-                                              if (!(entrantTwoAccounts === null)) {
-                                                for (d = 0; d < entrantTwoAccounts.length; d++) {
-                                                  if (entrantTwoAccounts[d].type === 'DISCORD') {
-                                                    let userID = message.guild.members.cache.filter(member => member.user.tag === entrantTwoAccounts[d].externalUsername).map(member => member.user.id);
-                                                    if (!(userID[0] === undefined)) {
-                                                      entrantTwoMention = `<@${userID[0]}>`;
-                                                    }
-                                                  }
-                                                }
-                                              }
-                                            }
-
-                                            accountModel.find({
-                                              profileslug: { $in: [entrantOneSlug, entrantTwoSlug] }
-                                            }, function (err, result) {
-                                              if (err) throw err;
-                                              if (result[0]) {
-                                                if (entrantOneSlug === result[0].profileslug) {
-                                                  console.log('slugs matched on first');
-                                                  entrantOneMention = `<@${result[0].discordid}>`;
-                                                } else {
-                                                  console.log('slugs matched on second');
-                                                  entrantTwoMention = `<@${result[0].discordid}>`;
-                                                }
-                                              }
-
-                                              if (result[1]) {
-                                                if (entrantOneSlug === result[1].profileslug) {
-                                                  console.log('slugs matched on first');
-                                                  entrantOneMention = `<@${result[1].discordid}>`;
-                                                } else {
-                                                  console.log('slugs matched on second');
-                                                  entrantTwoMention = `<@${result[1].discordid}>`;
-                                                }
-                                              }
-                                              dqchannel.send(`${entrantOneMention} and ${entrantTwoMention}, your match for ${endText}`).catch(err => console.log(err));
-                                            }).catch(err => console.log(err));
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }).catch(err => console.log(err));
+                                }).catch(err => console.log(err));
+                            } else {
+                              clearInterval(dqPingingMap.get(message.guild.id));
+                              dqPingingMap.delete(message.guild.id);
+                              sendMessage('Stopping DQ pinging - automatically end DQ pinging after six hours.');
+                              console.log(`auto stopped after six hours in ${message.guild.name}`);
+                            }
                           } else {
                             clearInterval(dqPingingMap.get(message.guild.id));
                             dqPingingMap.delete(message.guild.id);
-                            sendMessage('Stopping DQ pinging - automatically end DQ pinging after six hours.');
-                            console.log(`auto stopped after six hours in ${message.guild.name}`);
+                            sendMessage('Stopping DQ pinging - tournament has ended. If this is a mistake, check the tournament end time on smash.gg.');
+                            console.log(`auto stopped in ${message.guild.name} because tournament ended`);
                           }
-                        } else {
-                          clearInterval(dqPingingMap.get(message.guild.id));
-                          dqPingingMap.delete(message.guild.id);
-                          sendMessage('Stopping DQ pinging - tournament has ended. If this is a mistake, check the tournament end time on smash.gg.');
-                          console.log(`auto stopped in ${message.guild.name} because tournament ended`);
-                        }
-                      }, 5000));
-                    } else { sendMessage('I could not start DQ pinging - tournament has not started.'); }
+                        }, 5000));
+                      } else { sendMessage('I could not start DQ pinging - tournament has not started.'); }
+                    }
                   } else { sendMessage(`I could not start DQ pinging - no DQ pinging channel set. Do \`t!set dqpingchannel <#channel>\` to set DQ pinging channel.`); }
                 }
               } else { sendMessage('I could not start DQ pinging - DQ pinging is currently happening.'); }
