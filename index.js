@@ -109,7 +109,7 @@ client.on('message', message => {
 
   // t!help
   if (message.content.toLowerCase().startsWith(`${PREFIX}help`)) {
-    sendMessage('Command info can be found at https://top.gg/bot/719283403698077708. Feel free to contact **F0ne#1933** with any specific issues or feedback, or join the support/development server: https://discord.gg/ssYPUk6Snc.');
+    functions.sendMessage(message, 'Command info can be found at https://top.gg/bot/719283403698077708. Feel free to contact **F0ne#1933** with any specific issues or feedback, or join the support/development server: https://discord.gg/ssYPUk6Snc.');
     console.log(`${message.author.tag} executed t!help`);
   }
 
@@ -119,7 +119,7 @@ client.on('message', message => {
     accountArgs.shift();
 
     if (accountArgs[0] === undefined) {
-      sendMessage(`No arguments given. Do \`t!help\` to get command info.
+      functions.sendMessage(message, `No arguments given. Do \`t!help\` to get command info.
 Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optional)>\``);
     } else {
       switch (accountArgs[0].toString()) {
@@ -148,7 +148,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                   },
                     function (err, result) {
                       if (err) throw err;
-                      sendMessage('**your accounts have been re-linked!**', 'REPLY');
+                      functions.sendMessage(message, '**your accounts have been re-linked!**', 'REPLY');
                       console.log(`re-linked ${discordTag}`);
                     }).catch(err => console.log(err));
                 } else {
@@ -156,11 +156,11 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                     discordtag: discordTag,
                     discordid: discordID,
                     profileslug: accountSlug
-                  }).save().then(result => sendMessage('**your Discord account and smash.gg account are now linked!**', 'REPLY'), console.log(`linked ${discordTag}`)).catch(err => console.log(err));
+                  }).save().then(result => functions.sendMessage(message, '**your Discord account and smash.gg account are now linked!**', 'REPLY'), console.log(`linked ${discordTag}`)).catch(err => console.log(err));
                 }
               }).catch(err => console.log(err));
-            } else { sendMessage('I could not recognize the profile URL. Do \`t!help\` to get command info.') }
-          } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
+            } else { functions.sendMessage(message, 'I could not recognize the profile URL. Do \`t!help\` to get command info.') }
+          } else { functions.sendMessage(message, 'Something went wrong :confused: . Do \`t!help\` to get command info.'); }
           break;
 
         // t!account unlink
@@ -171,10 +171,10 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
           }, function (err, result) {
             if (err) throw err;
             if (result) {
-              sendMessage('**your Discord account and smash.gg account have been unlinked.**', 'REPLY');
+              functions.sendMessage(message, '**your Discord account and smash.gg account have been unlinked.**', 'REPLY');
               console.log(`unlinked ${message.author.tag}`);
             } else {
-              sendMessage('**your accounts are not currently linked.**', 'REPLY');
+              functions.sendMessage(message, '**your accounts are not currently linked.**', 'REPLY');
             }
           }).catch(err => console.log(err));
           break;
@@ -197,7 +197,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                     urlslug.splice(1);
                     urlslug = urlslug.toString();
                     getAttendeesAndList(urlslug, res.headers.location);
-                  } else { sendMessage('I could not find a tournament from the short URL. Do \`t!help\` to get command info.'); }
+                  } else { functions.sendMessage(message, 'I could not find a tournament from the short URL. Do \`t!help\` to get command info.'); }
                 });
               } else {
                 let urlslug = potentialTag.replace('https://smash.gg/tournament/', '');
@@ -235,7 +235,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                             }`;
                 let attendeeInfo = new Map();
                 let attendeeSlugs = [];
-                sendMessage(`Querying...`);
+                functions.sendMessage(message, `Querying...`);
                 recurseAttendees();
                 function recurseAttendees() {
                   fetch('https://api.smash.gg/gql/alpha', {
@@ -352,7 +352,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
               }, function (err, result) {
                 if (err) throw err;
                 if (result.length) {
-                  sendMessage(`${potentialTag} has linked their accounts! :white_check_mark:`);
+                  functions.sendMessage(message, `${potentialTag} has linked their accounts! :white_check_mark:`);
                 } else { callBackMessage(); }
               }).catch(err => console.log(err));
 
@@ -364,7 +364,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
               }, function (err, result) {
                 if (err) throw err;
                 if (result.length) {
-                  sendMessage(`${potentialTag} has linked their accounts! :white_check_mark:`);
+                  functions.sendMessage(message, `${potentialTag} has linked their accounts! :white_check_mark:`);
                 } else { callBackMessage(); }
               }).catch(err => console.log(err));
             }
@@ -375,18 +375,18 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
               if (err) throw err;
               potentialTag = 'your Discord account';
               if (result.length) {
-                sendMessage('your accounts are linked! :white_check_mark:', 'REPLY');
-              } else { sendMessage('your accounts are not linked :x:', 'REPLY'); }
+                functions.sendMessage(message, 'your accounts are linked! :white_check_mark:', 'REPLY');
+              } else { functions.sendMessage(message, 'your accounts are not linked :x:', 'REPLY'); }
             }).catch(err => console.log(err));
           }
 
           function callBackMessage() {
-            sendMessage(`${potentialTag} does not have their accounts linked :x:`);
+            functions.sendMessage(message, `${potentialTag} does not have their accounts linked :x:`);
           }
           break;
 
         default:
-          sendMessage('I could not recognize the argument provided. Do \`t!help\` to get command info.');
+          functions.sendMessage(message, 'I could not recognize the argument provided. Do \`t!help\` to get command info.');
       }
     }
   }
@@ -487,7 +487,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
           console.log(`Getting results for ${name}`);
           formattedName = replaceall('*', '\\*', name);
           formattedName = replaceall('_', '\\_', formattedName);
-          sendMessage(`Getting the latest tournament results for ${formattedName}...`);
+          functions.sendMessage(message, `Getting the latest tournament results for ${formattedName}...`);
           playerIds = data.data.user.player.id;
           if (data.data.user.images[0] != undefined) {
             if (data.data.user.images[0].height === data.data.user.images[0].width) {
@@ -823,7 +823,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                         });
                       }).catch(err => console.log(err));
                     }
-                  } else { sendMessage('This user does not have any results from their past 15 tournaments (includes admined + spectated tournaments).'); }
+                  } else { functions.sendMessage(message, 'This user does not have any results from their past 15 tournaments (includes admined + spectated tournaments).'); }
                 }
               }).catch(err => console.log(err));
           }
@@ -831,7 +831,7 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
     }
 
     function callBackMessage() {
-      sendMessage(`I could not find ${potentialTag} in my account database :x: . 
+      functions.sendMessage(message, `I could not find ${potentialTag} in my account database :x: . 
 \`t!account link <smash.gg profile URL>\` gives access to account-based commands.`);
     }
 
@@ -873,10 +873,10 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
   //         }
   //       } else { callBackMessage(); }
   //     });
-  //   } else { sendMessage(`I need a user's Discord mention or tag to run this command. Do \`t!help\` to get command info.`); }
+  //   } else { functions.sendMessage(message, `I need a user's Discord mention or tag to run this command. Do \`t!help\` to get command info.`); }
 
   //   function callBackMessage() {
-  //     sendMessage(`I could not find ${potentialTag} in my account database :x: . 
+  //     functions.sendMessage(message, `I could not find ${potentialTag} in my account database :x: . 
   //\`t!account link <smash.gg profile URL>\` gives access to account-based commands.`);
   //   }
 
@@ -904,12 +904,12 @@ Possible Arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
   // DQ PINGING
   if (message.content.toLowerCase().startsWith(`${PREFIX}dq`)) {
     // DQ pinging can be rewritten to be more efficient and readable
-    if (message.channel instanceof Discord.DMChannel) { sendMessage('I cannot run this command in DMs.') }//do not execute
+    if (message.channel instanceof Discord.DMChannel) { functions.sendMessage(message, 'I cannot run this command in DMs.'); }//do not execute
     else if (message.member.hasPermission('ADMINISTRATOR')) {
       let dqArgs = message.content.split(' ');
       dqArgs.shift();
       if (dqArgs[0] === undefined) {
-        sendMessage(`No arguments given. Do \`t!help\` to get command info.
+        functions.sendMessage(message, `No arguments given. Do \`t!help\` to get command info.
 Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
       } else {
         switch (dqArgs[0].toLowerCase()) {
@@ -939,7 +939,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                         }
                         dqPing(urlslug);
                       }).catch(err => console.log(err));
-                    } else { sendMessage('I could not find a tournament from the short URL. Do \`t!help\` to get command info.'); }
+                    } else { functions.sendMessage(message, 'I could not find a tournament from the short URL. Do \`t!help\` to get command info.'); }
                   });
                 } else if (dqArgs[0].startsWith('https://smash.gg/tournament/')) {
                   let urlslug = dqArgs[0].replace('https://smash.gg/tournament/', '');
@@ -955,11 +955,12 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                     }
                     dqPing(urlslug);
                   }).catch(err => console.log(err));
-                } else { sendMessage('I could not recognize the URL provided. Do \`t!help\` to get command info.'); }
+                } else { functions.sendMessage(message, 'I could not recognize the URL provided. Do \`t!help\` to get command info.'); }
 
                 function dqPing(slugSpecified) {
                   if (!(dqchannel === undefined)) {
-                    sendMessage('Starting DQ pinging...');
+                    console.log(`starting dq pinging in ${message.guild.name}`);
+                    functions.sendMessage(message, 'Starting DQ pinging...');
                     dqchannel = client.channels.cache.get(dqchannel);
                     let eventNumber = parseInt(dqArgs[1]);
                     var pingEvent = false;
@@ -1025,7 +1026,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                             }
                           }
                           DQLoop();
-                        } else { sendMessage('I could not find any tournament data from the URL provided :confused: . Do \`t!help\` to get command info.'); }
+                        } else { functions.sendMessage(message, 'I could not find any tournament data from the URL provided :confused: . Do \`t!help\` to get command info.'); }
                       }).catch(err => console.log(err));
                     function DQLoop() {
                       var setsPingedArray = [];
@@ -1091,13 +1092,13 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                             for (w = 0; w < calledWave.length; w++) {
                                               //console.log('wave found');
                                               if (calledWave[w] === null) {
-                                                console.log('no dq timers');
+                                                // console.log('no dq timers');
                                               } else {
                                                 for (s = 0; s < calledWave[w].length; s++) {
-                                                  console.log('set found');
+                                                  // console.log('set found');
                                                   if (!setsPingedArray.includes(calledWave[w][s].id)) {
                                                     setsPingedArray.push(calledWave[w][s].id);
-                                                    console.log('id added');
+                                                    // console.log('id added');
                                                     let quips = ['Please check-in on smash.gg!', 'Get ready to rumble!', 'Round 1, FIGHT!', '3.. 2.. 1.. GO!', 'Choose your character!', 'Start battle!'];
                                                     let endText = `\`${calledWave[w][s].fullRoundText}\` in **${activeEvents[e].name}** has been called. ${quips[Math.floor(Math.random() * 6)]}`;
 
@@ -1145,20 +1146,20 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                                       if (err) throw err;
                                                       if (result[0]) {
                                                         if (entrantOneSlug === result[0].profileslug) {
-                                                          console.log('slugs matched on first');
+                                                          // console.log('slugs matched on first');
                                                           entrantOneMention = `<@${result[0].discordid}>`;
                                                         } else {
-                                                          console.log('slugs matched on second');
+                                                          // console.log('slugs matched on second');
                                                           entrantTwoMention = `<@${result[0].discordid}>`;
                                                         }
                                                       }
 
                                                       if (result[1]) {
                                                         if (entrantOneSlug === result[1].profileslug) {
-                                                          console.log('slugs matched on first');
+                                                          // console.log('slugs matched on first');
                                                           entrantOneMention = `<@${result[1].discordid}>`;
                                                         } else {
-                                                          console.log('slugs matched on second');
+                                                          // console.log('slugs matched on second');
                                                           entrantTwoMention = `<@${result[1].discordid}>`;
                                                         }
                                                       }
@@ -1180,13 +1181,13 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                           for (w = 0; w < calledWave.length; w++) {
                                             //console.log('wave found');
                                             if (calledWave[w] === null) {
-                                              console.log('no dq timers');
+                                              // console.log('no dq timers');
                                             } else {
                                               for (s = 0; s < calledWave[w].length; s++) {
-                                                console.log('set found');
+                                                // console.log('set found');
                                                 if (!setsPingedArray.includes(calledWave[w][s].id)) {
                                                   setsPingedArray.push(calledWave[w][s].id);
-                                                  console.log('id added');
+                                                  // console.log('id added');
                                                   let quips = ['Please check-in on smash.gg!', 'Get ready to rumble!', 'Round 1, FIGHT!', '3.. 2.. 1.. GO!', 'Choose your character!', 'Start battle!'];
                                                   let endText = `\`${calledWave[w][s].fullRoundText}\` in **${activeEvents[e].name}** has been called. ${quips[Math.floor(Math.random() * 6)]}`;
 
@@ -1234,20 +1235,20 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                                     if (err) throw err;
                                                     if (result[0]) {
                                                       if (entrantOneSlug === result[0].profileslug) {
-                                                        console.log('slugs matched on first');
+                                                        // console.log('slugs matched on first');
                                                         entrantOneMention = `<@${result[0].discordid}>`;
                                                       } else {
-                                                        console.log('slugs matched on second');
+                                                        // console.log('slugs matched on second');
                                                         entrantTwoMention = `<@${result[0].discordid}>`;
                                                       }
                                                     }
 
                                                     if (result[1]) {
                                                       if (entrantOneSlug === result[1].profileslug) {
-                                                        console.log('slugs matched on first');
+                                                        // console.log('slugs matched on first');
                                                         entrantOneMention = `<@${result[1].discordid}>`;
                                                       } else {
-                                                        console.log('slugs matched on second');
+                                                        // console.log('slugs matched on second');
                                                         entrantTwoMention = `<@${result[1].discordid}>`;
                                                       }
                                                     }
@@ -1268,13 +1269,13 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                       for (w = 0; w < calledWave.length; w++) {
                                         //console.log('wave found');
                                         if (calledWave[w] === null) {
-                                          console.log('no dq timers');
+                                          // console.log('no dq timers');
                                         } else {
                                           for (s = 0; s < calledWave[w].length; s++) {
-                                            console.log('set found');
+                                            // console.log('set found');
                                             if (!setsPingedArray.includes(calledWave[w][s].id)) {
                                               setsPingedArray.push(calledWave[w][s].id);
-                                              console.log('id added');
+                                              // console.log('id added');
                                               let quips = ['Please check-in on smash.gg!', 'Get ready to rumble!', 'Round 1, FIGHT!', '3.. 2.. 1.. GO!', 'Choose your character!', 'Start battle!'];
                                               let endText = `\`${calledWave[w][s].fullRoundText}\` in **${activeEvents[indexEvent].name}** has been called. ${quips[Math.floor(Math.random() * 6)]}`;
 
@@ -1322,20 +1323,20 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                                                 if (err) throw err;
                                                 if (result[0]) {
                                                   if (entrantOneSlug === result[0].profileslug) {
-                                                    console.log('slugs matched on first');
+                                                    // console.log('slugs matched on first');
                                                     entrantOneMention = `<@${result[0].discordid}>`;
                                                   } else {
-                                                    console.log('slugs matched on second');
+                                                    // console.log('slugs matched on second');
                                                     entrantTwoMention = `<@${result[0].discordid}>`;
                                                   }
                                                 }
 
                                                 if (result[1]) {
                                                   if (entrantOneSlug === result[1].profileslug) {
-                                                    console.log('slugs matched on first');
+                                                    // console.log('slugs matched on first');
                                                     entrantOneMention = `<@${result[1].discordid}>`;
                                                   } else {
-                                                    console.log('slugs matched on second');
+                                                    // console.log('slugs matched on second');
                                                     entrantTwoMention = `<@${result[1].discordid}>`;
                                                   }
                                                 }
@@ -1351,22 +1352,22 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
                             } else {
                               clearInterval(dqPingingMap.get(message.guild.id));
                               dqPingingMap.delete(message.guild.id);
-                              sendMessage('Stopping DQ pinging - automatically end DQ pinging after six hours.');
+                              functions.sendMessage(message, 'Stopping DQ pinging - automatically end DQ pinging after six hours.');
                               console.log(`auto stopped after six hours in ${message.guild.name}`);
                             }
                           } else {
                             clearInterval(dqPingingMap.get(message.guild.id));
                             dqPingingMap.delete(message.guild.id);
-                            sendMessage('Stopping DQ pinging - tournament has ended. If this is a mistake, check the tournament end time on smash.gg.');
+                            functions.sendMessage(message, 'Stopping DQ pinging - tournament has ended. If this is a mistake, check the tournament end time on smash.gg.');
                             console.log(`auto stopped in ${message.guild.name} because tournament ended`);
                           }
                         }, 5000));
-                      } else { sendMessage('I could not start DQ pinging - tournament has not started.'); }
+                      } else { functions.sendMessage(message, 'I could not start DQ pinging - tournament has not started.'); }
                     }
-                  } else { sendMessage(`I could not start DQ pinging - no DQ pinging channel set. Do \`t!set dqpingchannel <#channel>\` to set DQ pinging channel.`); }
+                  } else { functions.sendMessage(message, `I could not start DQ pinging - no DQ pinging channel set. Do \`t!set dqpingchannel <#channel>\` to set DQ pinging channel.`); }
                 }
-              } else { sendMessage('I could not start DQ pinging - DQ pinging is currently happening.'); }
-            } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
+              } else { functions.sendMessage(message, 'I could not start DQ pinging - DQ pinging is currently happening.'); }
+            } else { functions.sendMessage(message, 'Something went wrong :confused: . Do \`t!help\` to get command info.'); }
             break;
 
           // t!dq stop
@@ -1374,23 +1375,23 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
             // Step 7
             clearInterval(dqPingingMap.get(message.guild.id));
             if (dqPingingMap.delete(message.guild.id)) {
-              sendMessage('DQ Pinging has stopped! :white_check_mark:');
+              functions.sendMessage(message, 'DQ Pinging has stopped! :white_check_mark:');
               console.log(`TO stopped pinging in ${message.guild.name}`);
             } else {
-              sendMessage('There is no active DQ pinging currently.');
+              functions.sendMessage(message, 'There is no active DQ pinging currently.');
             }
             break;
 
           default:
-            sendMessage('I could not recognize the argument provided. Do \`t!help\` to get command info.');
+            functions.sendMessage(message, 'I could not recognize the argument provided. Do \`t!help\` to get command info.');
         }
       }
-    } else { sendMessage('you don\'t have the permissions for that :sob:', 'REPLY'); }
+    } else { functions.sendMessage(message, 'you don\'t have the permissions for that :sob:', 'REPLY'); }
   }
 
   // t!set <argument>
   if (message.content.toLowerCase().startsWith(`${PREFIX}set`)) {
-    if (message.channel instanceof Discord.DMChannel) { sendMessage('I cannot run this command in DMs.') }//do not execute
+    if (message.channel instanceof Discord.DMChannel) { functions.sendMessage(message, 'I cannot run this command in DMs.') }//do not execute
     else if (message.member.hasPermission('ADMINISTRATOR')) {
       let setArgs = message.content.split(' ');
       setArgs.shift();
@@ -1398,7 +1399,7 @@ Possible Arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``)
       let guildID = message.guild.id;
 
       if (setArgs[0] === undefined) {
-        sendMessage(`No arguments given. Do \`t!help\` to get command info.
+        functions.sendMessage(message, `No arguments given. Do \`t!help\` to get command info.
 Possible Arguments: \`announcemessage <message>\`, \`announcechannel <#channel>\`, \`dqpingchannel <#channel>\`, \`pingrole <@role>\``);
       } else {
         switch (setArgs[0].toLowerCase()) {
@@ -1419,7 +1420,7 @@ Possible Arguments: \`announcemessage <message>\`, \`announcechannel <#channel>\
               setArgs.shift();
               if (setArgs.length >= 1) {
                 setArgs = setArgs.join(' ');
-                sendMessage(`Previous Announcement Message: ${tournamentAnnounceMessage}
+                functions.sendMessage(message, `Previous Announcement Message: ${tournamentAnnounceMessage}
 New Announcement Message: ${setArgs}`);
                 announcemessageModel.find({
                   guildid: guildID
@@ -1447,7 +1448,7 @@ New Announcement Message: ${setArgs}`);
                   guildid: guildID
                 }, function (err, result) {
                   if (err) throw err;
-                  sendMessage(`The announcement message has been reset! :white_check_mark:`);
+                  functions.sendMessage(message, `The announcement message has been reset! :white_check_mark:`);
                 }).catch(err => console.log(err));
               }
             }).catch(err => console.log(err));
@@ -1473,14 +1474,14 @@ New Announcement Message: ${setArgs}`);
                       let channelSet = new channelModel({
                         guildid: guildID,
                         channelid: Channel
-                      }).save().then(result => sendMessage('The announcement channel is now set! :white_check_mark:')).catch(err => console.log(err));
+                      }).save().then(result => functions.sendMessage(message, 'The announcement channel is now set! :white_check_mark:')).catch(err => console.log(err));
                     } else {
-                      sendMessage('The announcement channel has been changed! :white_check_mark:')
+                      functions.sendMessage(message, 'The announcement channel has been changed! :white_check_mark:')
                     }
                   }).catch(err => console.log(err));
-                } else { sendMessage('I could not find the specified channel.'); }
-              } else { sendMessage('I could not find the specified channel. Make sure you are pinging the channel using #.'); }
-            } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
+                } else { functions.sendMessage(message, 'I could not find the specified channel.'); }
+              } else { functions.sendMessage(message, 'I could not find the specified channel. Make sure you are pinging the channel using #.'); }
+            } else { functions.sendMessage(message, 'Something went wrong :confused: . Do \`t!help\` to get command info.'); }
             break;
 
           // t!set dqpingchannel <#channel>
@@ -1506,18 +1507,18 @@ New Announcement Message: ${setArgs}`);
                       },
                         function (err, result) {
                           if (err) throw err;
-                          sendMessage('The DQ pinging channel has been changed! :white_check_mark:');
+                          functions.sendMessage(message, 'The DQ pinging channel has been changed! :white_check_mark:');
                         }).catch(err => console.log(err));
                     } else {
                       let channelSet = new channelModel({
                         guildid: guildID,
                         channelid: Channel
-                      }).save().then(result => sendMessage('The DQ pinging channel is now set! :white_check_mark:')).catch(err => console.log(err));
+                      }).save().then(result => functions.sendMessage(message, 'The DQ pinging channel is now set! :white_check_mark:')).catch(err => console.log(err));
                     }
                   }).catch(err => console.log(err));
-                } else { sendMessage('I could not find the specified channel.'); }
-              } else { sendMessage('I could not find the specified channel. Make sure you are pinging the channel using #.'); }
-            } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
+                } else { functions.sendMessage(message, 'I could not find the specified channel.'); }
+              } else { functions.sendMessage(message, 'I could not find the specified channel. Make sure you are pinging the channel using #.'); }
+            } else { functions.sendMessage(message, 'Something went wrong :confused: . Do \`t!help\` to get command info.'); }
             break;
 
           // t!set pingrole <@role>
@@ -1540,24 +1541,24 @@ New Announcement Message: ${setArgs}`);
                       role: addedRole
                     }, function (err, result) {
                       if (err) throw err;
-                      sendMessage(`The announcement pinging role has been changed to ${setArgs} :white_check_mark:`);
+                      functions.sendMessage(message, `The announcement pinging role has been changed to ${setArgs} :white_check_mark:`);
                     }).catch(err => console.log(err));
                   } else {
                     let roleSet = new pingroleModel({
                       guildid: guildID,
                       role: addedRole
-                    }).save().then(result => sendMessage(`The announcement pinging role is now set to ${setArgs} :white_check_mark:`)).catch(err => console.log(err));
+                    }).save().then(result => functions.sendMessage(message, `The announcement pinging role is now set to ${setArgs} :white_check_mark:`)).catch(err => console.log(err));
                   }
                 }).catch(err => console.log(err));
-              } else { sendMessage(`I could not find the specified role. Make sure you are pinging the role using @.`) }
+              } else { functions.sendMessage(message, `I could not find the specified role. Make sure you are pinging the role using @.`) }
             } else if (setArgs.length === 1) {
               pingroleModel.findOneAndDelete({
                 guildid: guildID
               }, function (err, result) {
                 if (err) throw err;
-                sendMessage(`The announcement pinging role has been reset! :white_check_mark:`);
+                functions.sendMessage(message, `The announcement pinging role has been reset! :white_check_mark:`);
               }).catch(err => console.log(err));
-            } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
+            } else { functions.sendMessage(message, 'Something went wrong :confused: . Do \`t!help\` to get command info.'); }
             break;
 
           // t!set timezone <city>
@@ -1582,17 +1583,17 @@ New Announcement Message: ${setArgs}`);
                       timezone: setArgs
                     }, function (err, result) {
                       if (err) throw err;
-                      sendMessage(`The timezone has been changed to **${newTimezone}** :white_check_mark:`);
+                      functions.sendMessage(message, `The timezone has been changed to **${newTimezone}** :white_check_mark:`);
                     }).catch(err => console.log(err));
                   } else {
                     let timezoneSet = new timezoneModel({
                       guildid: guildID,
                       timezone: setArgs
-                    }).save().then(result => sendMessage(`The timezone is now set to **${newTimezone}** :white_check_mark:`)).catch(err => console.log(err));
+                    }).save().then(result => functions.sendMessage(message, `The timezone is now set to **${newTimezone}** :white_check_mark:`)).catch(err => console.log(err));
                   }
                 }).catch(err => console.log(err));
               } else {
-                sendMessage(`I could not recognize the city specified for timezone.
+                functions.sendMessage(message, `I could not recognize the city specified for timezone.
 Currently Supported Cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`America/Denver\`, \`America/Regina\`, \`America/Chicago\`, \`America/New_York\`, \`Pacific/Honolulu\``)
               }
             } else if (setArgs.length === 1) {
@@ -1603,9 +1604,9 @@ Currently Supported Cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`Amer
                 guildid: guildID
               }, function (err, result) {
                 if (err) throw err;
-                sendMessage(`The timezone has been reset to **${newTimezone}** :white_check_mark:`);
+                functions.sendMessage(message, `The timezone has been reset to **${newTimezone}** :white_check_mark:`);
               }).catch(err => console.log(err));
-            } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
+            } else { functions.sendMessage(message, 'Something went wrong :confused: . Do \`t!help\` to get command info.'); }
             break;
 
           // t!set language <language>
@@ -1627,37 +1628,37 @@ Currently Supported Cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`Amer
                       language: setArgs
                     }, function (err, result) {
                       if (err) throw err;
-                      sendMessage(`The language has been changed to **${setArgs}**.`);
+                      functions.sendMessage(message, `The language has been changed to **${setArgs}**.`);
                     }).catch(err => console.log(err));
                   } else {
                     let languageSet = new languageModel({
                       guildid: guildID,
                       language: setArgs
-                    }).save().then(result => sendMessage(`The language is now set to **${setArgs}**.`)).catch(err => console.log(err));
+                    }).save().then(result => functions.sendMessage(message, `The language is now set to **${setArgs}**.`)).catch(err => console.log(err));
                   }
                 }).catch(err => console.log(err));
-              } else { sendMessage('I could not find or do not support the language provided :sob: . Make sure the language specified is in shorthand format (ISO-639-1 Code). Check this to see which languages/codes are supported: https://cloud.google.com/translate/docs/languages.'); }
+              } else { functions.sendMessage(message, 'I could not find or do not support the language provided :sob: . Make sure the language specified is in shorthand format (ISO-639-1 Code). Check this to see which languages/codes are supported: https://cloud.google.com/translate/docs/languages.'); }
             } else if (setArgs.length === 1) {
               languageModel.findOneAndDelete({
                 guildid: guildID
               }, function (err, result) {
                 if (err) throw err;
-                sendMessage(`The language has been reset to **English (en)**.`);
+                functions.sendMessage(message, `The language has been reset to **English (en)**.`);
               }).catch(err => console.log(err));
-            } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
+            } else { functions.sendMessage(message, 'Something went wrong :confused: . Do \`t!help\` to get command info.'); }
             break;
 
           default:
-            sendMessage(`I could not recognize the argument provided. Do \`t!help\` to get command info.`);
+            functions.sendMessage(message, `I could not recognize the argument provided. Do \`t!help\` to get command info.`);
         }
       }
-    } else { sendMessage('you don\'t have the permissions for that :sob:', 'REPLY'); }
+    } else { functions.sendMessage(message, 'you don\'t have the permissions for that :sob:', 'REPLY'); }
   }
 
   // t!announce <url> <ping/no ping>
   // Announce code is old, needs to be rewritten to be more readable and efficient
   if (message.content.toLowerCase().startsWith(`${PREFIX}announce`)) {
-    if (message.channel instanceof Discord.DMChannel) { sendMessage('I cannot run this command in DMs.') }//do not execute
+    if (message.channel instanceof Discord.DMChannel) { functions.sendMessage(message, 'I cannot run this command in DMs.') }//do not execute
     else //execute
       if (message.member.hasPermission('ADMINISTRATOR')) {
         let tournamentArgs = message.content.split(' ');
@@ -1671,7 +1672,7 @@ Currently Supported Cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`Amer
               if (err) throw err;
               if (result.length) {
                 let announcechannel = client.channels.cache.get(result[0].channelid);
-                sendMessage(`Announcing in ${announcechannel.name}...`);
+                functions.sendMessage(message, `Announcing in ${announcechannel.name}...`);
                 if (tournamentArgs[0].startsWith('smash.gg/')) {
                   // Find path of short URL and parse URL for slug
                   urllib.request('https://' + tournamentArgs[0], function (err, data, res) {
@@ -1682,7 +1683,7 @@ Currently Supported Cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`Amer
                       urlslug.splice(1);
                       urlslug = urlslug.toString();
                       getDataAndAnnounce(urlslug, res.headers.location);
-                    } else { sendMessage('I could not find a tournament from the short URL. Do \`t!help\` to get command info.'); }
+                    } else { functions.sendMessage(message, 'I could not find a tournament from the short URL. Do \`t!help\` to get command info.'); }
                   });
                 } else {
                   let urlslug = tournamentArgs[0].replace('https://smash.gg/tournament/', '');
@@ -1782,7 +1783,7 @@ Check-in opens at ${functions.convertEpochToClock(events[i].startAt - events[i].
                                   tournamentAnnounceMessage = 'The registration for ' + tournamentname + ' is up:';
                                 }
                                 sendAnnouncement(false);
-                              } else { sendMessage('I could not understand whether to ping or not. Do \`t!help\` to get command info.') }
+                              } else { functions.sendMessage(message, 'I could not understand whether to ping or not. Do \`t!help\` to get command info.') }
                               function sendAnnouncement(ping) {
                                 let finalAnnounceMessage = `${tournamentAnnounceMessage} ${tournamentURL}
 
@@ -1822,14 +1823,14 @@ ${eventNames.join(``)}`;
                             }).catch(err => console.log(err));
                           }).catch(err => console.log(err));
                         }).catch(err => console.log(err));
-                      } else { sendMessage(`I could not find the specified tournament. Do \`t!help\` to get command info.`); }
+                      } else { functions.sendMessage(message, `I could not find the specified tournament. Do \`t!help\` to get command info.`); }
                     }).catch(err => console.log(err));
                 }
-              } else { sendMessage('There is no announcement channel set. Do \`t!help\` to get command info.'); }
+              } else { functions.sendMessage(message, 'There is no announcement channel set. Do \`t!help\` to get command info.'); }
             }).catch(err => console.log(err));
-          } else (sendMessage('I could not recognize the URL provided. Do \`t!help\` to get command info.'));
-        } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
-      } else { sendMessage('you don\'t have the permissions for that :sob:', 'REPLY'); }
+          } else (functions.sendMessage(message, 'I could not recognize the URL provided. Do \`t!help\` to get command info.'));
+        } else { functions.sendMessage(message, 'Something went wrong :confused: . Do \`t!help\` to get command info.'); }
+      } else { functions.sendMessage(message, 'you don\'t have the permissions for that :sob:', 'REPLY'); }
   }
 
   // t!mm <argument>
@@ -1840,7 +1841,7 @@ ${eventNames.join(``)}`;
     mmArgs.shift();
 
     if (mmArgs[0] === undefined) {
-      sendMessage(`No arguments given. Do \`t!help\` to get command info.
+      functions.sendMessage(message, `No arguments given. Do \`t!help\` to get command info.
 Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
     } else {
       let activeRole;
@@ -1869,7 +1870,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                   activeRoleID = addedRole.id;
                   activeRolePing = `<@&${activeRoleID}>`;
                   setRole();
-                } else { sendMessage(`I could not find the specified role. Make sure you are pinging the role using @.`); }
+                } else { functions.sendMessage(message, `I could not find the specified role. Make sure you are pinging the role using @.`); }
               }
               function setRole() {
                 mmroleModel.find({
@@ -1884,18 +1885,18 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                       role: addedRole
                     }, function (err, result) {
                       if (err) throw err;
-                      sendMessage(`The matchmaking role has been changed to ${activeRolePing} :white_check_mark:`);
+                      functions.sendMessage(message, `The matchmaking role has been changed to ${activeRolePing} :white_check_mark:`);
                     }).catch(err => console.log(err));
                   } else {
                     let roleSet = new mmroleModel({
                       guildid: guildID,
                       role: addedRole
-                    }).save().then(result => sendMessage(`The matchmaking role is now set to ${activeRolePing} :white_check_mark:`)).catch(err => console.log(err));
+                    }).save().then(result => functions.sendMessage(message, `The matchmaking role is now set to ${activeRolePing} :white_check_mark:`)).catch(err => console.log(err));
                   }
                 }).catch(err => console.log(err));
               }
-            } else { sendMessage('Something went wrong :confused: . Do \`t!help\` to get command info.'); }
-          } else { sendMessage('you don\'t have the permissions for that :sob:', 'REPLY'); }
+            } else { functions.sendMessage(message, 'Something went wrong :confused: . Do \`t!help\` to get command info.'); }
+          } else { functions.sendMessage(message, 'you don\'t have the permissions for that :sob:', 'REPLY'); }
           break;
 
         // t!mm on
@@ -1988,7 +1989,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                 }).catch(err => console.log(err));
               } else { message.reply(`you do not have the **${activeRoleName}** role.`); }
             } else {
-              sendMessage(`There is no matchmaking role currently set. Admins can do \`t!mm set <role name without @>\` to set the matchmaking role.`)
+              functions.sendMessage(message, `There is no matchmaking role currently set. Admins can do \`t!mm set <role name without @>\` to set the matchmaking role.`)
             }
           }).catch(err => console.log(err));
 
@@ -2038,7 +2039,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                 message.channel.send(rolesList);
               }).catch(err => console.log(err));
             } else {
-              sendMessage('There is no matchmaking role currently set. Admins can do \`t!mm set <role name without @>\` to set the matchmaking role.');
+              functions.sendMessage(message, 'There is no matchmaking role currently set. Admins can do \`t!mm set <role name without @>\` to set the matchmaking role.');
             }
           }).catch(err => console.log(err));
           break;
@@ -2071,13 +2072,13 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                 }).catch(err => console.log(err));
               } else { message.reply(`you do not have the **${activeRoleName}** role.`); }
             } else {
-              sendMessage('There is no matchmaking role currently set. Admins can do \`t!mm set <role name without @>\` to set the matchmaking role.');
+              functions.sendMessage(message, 'There is no matchmaking role currently set. Admins can do \`t!mm set <role name without @>\` to set the matchmaking role.');
             }
           }).catch(err => console.log(err));
           break;
 
         default:
-          sendMessage('I could not recognize the argument provided. Do \`t!help\` to get command info.');
+          functions.sendMessage(message, 'I could not recognize the argument provided. Do \`t!help\` to get command info.');
       }
     }
   }
@@ -2087,7 +2088,7 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
     // ids:
     // smash ultimate: 1386
     // valorant: 34223
-    if (message.channel instanceof Discord.DMChannel) { sendMessage('I cannot run this command in DMs.') }//do not execute
+    if (message.channel instanceof Discord.DMChannel) { functions.sendMessage(message, 'I cannot run this command in DMs.') }//do not execute
     else //execute
       if (message.member.hasPermission('ADMINISTRATOR')) {
         let gameArgs = message.content.split(' ');
@@ -2104,10 +2105,10 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
             game = 34223;
             gameFound = true;
             gameName = 'Valorant'
-          } else { sendMessage(`I could not find the specified game. Do \`t!help\` to get command info.`); }
+          } else { functions.sendMessage(message, `I could not find the specified game. Do \`t!help\` to get command info.`); }
 
           if (gameFound) {
-            sendMessage(`Searching for the top 10 upcoming ${gameName} tournaments...`);
+            functions.sendMessage(message, `Searching for the top 10 upcoming ${gameName} tournaments...`);
             var perPage = 10;
             var videogameId = game;
             var query = `query TournamentsByVideogame($videogameId: ID!) {
@@ -2202,55 +2203,11 @@ Possible Arguments: \`set <@role>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
                 }).catch(err => console.log(err));
 
               }).catch(err => console.log(err));
-          } else { sendMessage(`I could not find the specified game. Do \`t!help\` to get command info.`); }
-        } else { sendMessage(`There is no game provided. Do \`t!help\` to get command info.`); }
-      } else { sendMessage('you don\'t have the permissions for that :sob:', 'REPLY'); }
+          } else { functions.sendMessage(message, `I could not find the specified game. Do \`t!help\` to get command info.`); }
+        } else { functions.sendMessage(message, `There is no game provided. Do \`t!help\` to get command info.`); }
+      } else { functions.sendMessage(message, 'you don\'t have the permissions for that :sob:', 'REPLY'); }
   }
 
-  function sendMessage(specifiedMessage, messageType) {
-    let guildID;
-    message.guild === null ? guildID = '' : guildID = message.guild.id;
-    languageModel.find({
-      guildid: guildID
-    }, function (err, result) {
-      if (err) throw err;
-      if (result.length) {
-        fetch(`https://api.mymemory.translated.net/get?q=${fixedEncodeURIComponent(specifiedMessage)}&langpair=en|${result[0].language}&de=random@gmail.com`)
-          .then(res => res.json())
-          .then(json => {
-            let translation = json.responseData.translatedText;
-            translation === null ? generateAndSend(specifiedMessage) : translation.toUpperCase() != translation ? generateAndSend(translation) : generateAndSend(specifiedMessage);
-          }).catch(err => console.log(err));
-        function fixedEncodeURIComponent(str) {
-          return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
-            return '%' + c.charCodeAt(0).toString(16);
-          });
-        }
-      } else { generateAndSend(specifiedMessage); }
-    }).catch(err => console.log(err));
-    function generateAndSend(finalMessage) {
-      const messageEmbed = new Discord.MessageEmbed()
-        .setColor('#222326')
-        .setDescription(finalMessage);
-      switch (messageType) {
-        case 'EMBED':
-
-          message.channel.send(messageEmbed);
-          break;
-
-        case 'REPLY':
-          message.reply(finalMessage);
-          break;
-
-        case 'SEND':
-          message.channel.send(finalMessage);
-          break;
-
-        default:
-          message.channel.send(messageEmbed);
-      }
-    }
-  }
 });
 
 //client.login(ALTDISCORDTOKEN);
