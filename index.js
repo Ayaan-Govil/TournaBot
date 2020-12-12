@@ -12,6 +12,8 @@ const mongoose = require('mongoose');
 const functions = require('./functions');
 //const fs = require('fs');
 
+
+
 const client = new Discord.Client();
 // client.commands = new Discord.Collection();
 
@@ -21,6 +23,8 @@ const client = new Discord.Client();
 //   const command = require(`./commands/${file}`);
 //   client.commands.set(command.name, command);
 // }
+
+
 
 // MongoDB Models
 const channelModel = require('./database/models/channel');
