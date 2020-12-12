@@ -1,3 +1,6 @@
+const Discord = require('discord.js');
+const languageModel = require('./database/models/language');
+
 function convertEpoch(epoch, citytimezone) {
   let convertedTime;
   let date = new Date(0);
@@ -65,5 +68,53 @@ function convertEpochToClock(epoch, citytimezone, showSeconds) {
   return convertedTime;
 }
 
-module.exports.convertEpoch = convertEpoch;
-module.exports.convertEpochToClock = convertEpochToClock;
+function sendMessage(message, specifiedMessage, messageType) {
+  let guildID;
+  message.guild === null ? guildID = '' : guildID = message.guild.id;
+  languageModel.find({
+    guildid: guildID
+  }, function (err, result) {
+    if (err) throw err;
+    if (result.length) {
+      fetch(`https://api.mymemory.translated.net/get?q=${fixedEncodeURIComponent(specifiedMessage)}&langpair=en|${result[0].language}&de=random@gmail.com`)
+        .then(res => res.json())
+        .then(json => {
+          let translation = json.responseData.translatedText;
+          translation === null ? generateAndSend(specifiedMessage) : translation.toUpperCase() != translation ? generateAndSend(translation) : generateAndSend(specifiedMessage);
+        }).catch(err => console.log(err));
+      function fixedEncodeURIComponent(str) {
+        return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
+          return '%' + c.charCodeAt(0).toString(16);
+        });
+      }
+    } else { generateAndSend(specifiedMessage); }
+  }).catch(err => console.log(err));
+  function generateAndSend(finalMessage) {
+    const messageEmbed = new Discord.MessageEmbed()
+      .setColor('#222326')
+      .setDescription(finalMessage);
+    switch (messageType) {
+      case 'EMBED':
+
+        message.channel.send(messageEmbed);
+        break;
+
+      case 'REPLY':
+        message.reply(finalMessage);
+        break;
+
+      case 'SEND':
+        message.channel.send(finalMessage);
+        break;
+
+      default:
+        message.channel.send(messageEmbed);
+    }
+  }
+}
+
+module.exports = {
+  convertEpoch: convertEpoch,
+  convertEpochToClock: convertEpochToClock,
+  sendMessage: sendMessage
+};
