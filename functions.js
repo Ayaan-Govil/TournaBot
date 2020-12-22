@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const languageModel = require('./database/models/language');
+const fetch = require('node-fetch');
 
 function convertEpoch(epoch, citytimezone) {
   let convertedTime;
@@ -70,7 +71,7 @@ function convertEpochToClock(epoch, citytimezone, showSeconds) {
 
 function sendMessage(message, specifiedMessage, messageType) {
   let guildID;
-  message.guild === null ? guildID = '' : guildID = message.guild.id;
+  !message.guild ? guildID = '' : guildID = message.guild.id;
   languageModel.find({
     guildid: guildID
   }, function (err, result) {
