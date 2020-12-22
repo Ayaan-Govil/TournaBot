@@ -4,7 +4,7 @@
 
 TournaBot is a Discord bot designed to streamline [smash.gg](https://smash.gg/) tournaments and improve user quality-of-life through specialized commands - built on [Node.js](https://nodejs.org/en/) and [Discord.js](https://discord.js.org/#/).
 
-[TournaBot's top.gg page](https://top.gg/bot/719283403698077708) should contain any information you need related to TournaBot, including the [invite link](https://discord.com/oauth2/authorize?client_id=719283403698077708&scope=bot&permissions=8), command info, [support/development Discord server](https://discord.gg/ssYPUk6Snc), and more.
+Please check out [TournaBot's top.gg page](https://top.gg/bot/719283403698077708) and the [support/development Discord server](https://discord.gg/ssYPUk6Snc) if you need any help. You can find the [invite link](https://discord.com/oauth2/authorize?client_id=719283403698077708&scope=bot&permissions=8) here.
 
 ## Table of Contents
 
@@ -46,7 +46,7 @@ To create a Discord bot client, make an application through the [Discord Develop
 ##### Node.js
 
 TournaBot uses [Node.js](https://nodejs.org/en/) v12.0.0 or higher.
-To install the required npm dependencies, execute `npm install` through a console within the project folder.
+To install the required npm dependencies, execute `npm run build` through the console within the project folder.
 
 ##### MongoDB
 
