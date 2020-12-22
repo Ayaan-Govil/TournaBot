@@ -1,11 +1,12 @@
 {
   "name": "tournabot",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Streamline smash.gg tournaments and improve user quality-of-life.",
   "main": "index.js",
   "scripts": {
+    "build": "npm install && npm update && echo Build complete.",
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nodemon -e js"
   },
   "author": "Ayaan Govil",
   "license": "GPL-3.0",
@@ -13,6 +14,7 @@
     "discord.js": "^12.4.1",
     "edit-json-file": "^1.5.0",
     "es6-promise": "^4.2.8",
+    "fastest-levenshtein": "^1.0.12",
     "mongodb": "^3.6.3",
     "mongoose": "^5.10.13",
     "node-fetch": "^2.6.1",
