@@ -4,7 +4,7 @@
 
 TournaBot is a Discord bot designed to streamline [smash.gg](https://smash.gg/) tournaments and improve user quality-of-life through specialized commands - built on [Node.js](https://nodejs.org/en/) and [Discord.js](https://discord.js.org/#/).
 
-Please check out [TournaBot's top.gg page](https://top.gg/bot/719283403698077708) and the [support/development Discord server](https://discord.gg/ssYPUk6Snc) if you need any help. You can find the [invite link](https://discord.com/oauth2/authorize?client_id=719283403698077708&scope=bot&permissions=8) here.
+Please check out [TournaBot's top.gg page](https://top.gg/bot/719283403698077708) and the [support/development Discord server](https://discord.gg/ssYPUk6Snc) if you need any help. You can find the [invite link](https://discord.com/oauth2/authorize?client_id=719283403698077708&scope=bot&permissions=268659832) here.
 
 ## Table of Contents
 
