@@ -1,13 +1,22 @@
 // Dependencies
-// const Discord = require('discord.js');
+const Discord = require('discord.js');
 const { generateHelpSelection, generateAccountsEmbed, generateResultsEmbed, generateDQPingingEmbed, generateAnnounceEmbed, generateLocalizationEmbed, generateMatchmakingEmbed, generateSearchEmbed, generateInfoEmbed } = require('./help_embeds/help_embeds.js');
 const { generateHelp } = require('./help_embeds/generate_help.js');
+const { sendMessage } = require('../functions.js');
 
 module.exports = {
   name: 'help',
   description: 'Help command.',
   execute(message, client) {
-    console.log(`${message.author.tag} executed t!help`);
+    if (message.channel instanceof Discord.DMChannel) {
+      console.log(`${message.author.tag} executed t!help in DM`);
+      sendMessage(message, `Please run the help command in a server. Due to permissions, the proper help command does not work in DMs.
+      
+Feel free to contact **F0ne#1933** with any specific issues or feedback, or join the [support/development server](https://discord.gg/ssYPUk6Snc).`);
+      return;
+    }
+
+    if (message.author.tag != 'TournaBot#7477') console.log(`${message.author.tag} executed t!help`);
 
     var currentIndex = 0;
     message.channel.send(generateHelpSelection(currentIndex)).then(message => {
