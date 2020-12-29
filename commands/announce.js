@@ -17,9 +17,8 @@ module.exports = {
   description: 'Announce tournaments with event information.',
   execute(message, client) {
     // Announce code is old, needs to be rewritten to be more readable and efficient
-    if (message.channel instanceof Discord.DMChannel) { sendMessage(message, 'I cannot run this command in DMs.') }//do not execute
-    else //execute
-      if (message.member.hasPermission('ADMINISTRATOR')) {
+    if (message.channel instanceof Discord.DMChannel) { sendMessage(message, 'I cannot run this command in DMs.') }
+    else if (message.member.hasPermission('ADMINISTRATOR')) {
         let tournamentArgs = message.content.split(' ');
         tournamentArgs.shift();
         if (tournamentArgs.length >= 2) {
