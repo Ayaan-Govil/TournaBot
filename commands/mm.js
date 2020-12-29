@@ -14,8 +14,8 @@ module.exports = {
     // No localization for parts of matchmaking due to encoding messing with formatting
     mmArgs = message.content.split(' ');
     mmArgs.shift();
-
-    if (mmArgs[0] === undefined) {
+    if (message.channel instanceof Discord.DMChannel) { sendMessage(message, 'I cannot run this command in DMs.'); }
+    else if (mmArgs[0] === undefined) {
       sendMessage(message, `No arguments given. Do \`t!help\` to get command info.
 
 Possible arguments: \`set <@role/role name (optional)>\`, \`on\`, \`off\`, \`list\`, \`ping\``);
