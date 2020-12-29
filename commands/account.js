@@ -47,7 +47,7 @@ Possible arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                   },
                     function (err, result) {
                       if (err) throw err;
-                      sendMessage(message, '**your accounts have been re-linked!**', 'REPLY');
+                      message.channel instanceof Discord.DMChannel ? sendMessage(message, '**Your accounts have been re-linked!**', 'REPLY') : sendMessage(message, '**your accounts have been re-linked!**', 'REPLY');
                       console.log(`re-linked ${discordTag}`);
                     }).catch(err => console.log(err));
                 } else {
@@ -55,7 +55,7 @@ Possible arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                     discordtag: discordTag,
                     discordid: discordID,
                     profileslug: accountSlug
-                  }).save().then(result => sendMessage(message, '**your Discord account and smash.gg account are now linked!**', 'REPLY'), console.log(`linked ${discordTag}`)).catch(err => console.log(err));
+                  }).save().then(result => message.channel instanceof Discord.DMChannel ? sendMessage(message, '**Your Discord account and smash.gg account are now linked!**', 'REPLY') : sendMessage(message, '**your Discord account and smash.gg account are now linked!**', 'REPLY'), console.log(`linked ${discordTag}`)).catch(err => console.log(err));
                 }
               }).catch(err => console.log(err));
             } else { sendMessage(message, 'I could not recognize the profile URL. Do \`t!help\` to get command info.') }
@@ -70,10 +70,10 @@ Possible arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
           }, function (err, result) {
             if (err) throw err;
             if (result) {
-              sendMessage(message, '**your Discord account and smash.gg account have been unlinked.**', 'REPLY');
+              message.channel instanceof Discord.DMChannel ? sendMessage(message, '**Your Discord account and smash.gg account have been unlinked.**', 'REPLY') : sendMessage(message, '**your Discord account and smash.gg account have been unlinked.**', 'REPLY');
               console.log(`unlinked ${message.author.tag}`);
             } else {
-              sendMessage(message, '**your accounts are not currently linked.**', 'REPLY');
+              message.channel instanceof Discord.DMChannel ? sendMessage(message, '**Your accounts are not currently linked.**', 'REPLY') : sendMessage(message, '**your accounts are not currently linked.**', 'REPLY');
             }
           }).catch(err => console.log(err));
           break;
@@ -278,8 +278,8 @@ Possible arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
               if (err) throw err;
               potentialTag = 'your Discord account';
               if (result.length) {
-                sendMessage(message, 'your accounts are linked! :white_check_mark:', 'REPLY');
-              } else { sendMessage(message, 'your accounts are not linked :x:', 'REPLY'); }
+                message.channel instanceof Discord.DMChannel ? sendMessage(message, 'Your accounts are linked! :white_check_mark:', 'REPLY') : sendMessage(message, 'your accounts are linked! :white_check_mark:', 'REPLY');
+              } else { message.channel instanceof Discord.DMChannel ? sendMessage(message, 'Your accounts are not linked :x:', 'REPLY') : sendMessage(message, 'your accounts are not linked :x:', 'REPLY'); }
             }).catch(err => console.log(err));
           }
 
