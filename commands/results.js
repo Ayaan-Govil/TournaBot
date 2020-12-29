@@ -22,7 +22,6 @@ module.exports = {
     // character catch for events
     // more testing (round robin, ladder, etc.)
     // *search for anyones results by keyword
-    // compare admin list to user and use variables to query more tournaments for filtering out TO'd tournaments
     // more character emojis
     let resultsArgs = message.content.split(' ');
     resultsArgs.shift();
@@ -163,11 +162,11 @@ module.exports = {
                         nodes {
                           games {
                             selections {
+                              selectionValue
                               entrant {
                                 name
                                 id
                               }
-                              selectionValue
                             }
                           }
                           fullRoundText
@@ -420,7 +419,7 @@ module.exports = {
                       message.channel.send(generateResults(currentIndex)).then(message => {
                         message.react('⬅️');
                         message.react('➡️');
-                        
+
                         const filter = (reaction, user) => {
                           return (reaction.emoji.name === '⬅️' || reaction.emoji.name === '➡️') && user.id != message.author.id;
                         };
@@ -447,7 +446,7 @@ module.exports = {
                         });
                       }).catch(err => console.log(err));
                     }
-                  } else { sendMessage(message, 'This user does not have any results from their past 15 tournaments (includes admined + spectated tournaments).'); }
+                  } else { sendMessage(message, 'This user does not have any results from their past 15 tournaments (includes admined/spectated tournaments).'); }
                 }
               }).catch(err => console.log(err));
           }
