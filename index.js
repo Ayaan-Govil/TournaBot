@@ -77,7 +77,7 @@ client.on('message', message => {
 
     if (!client.commands.has(command)) {
       if (!command) {
-        message.reply('you can do `t!help` to see command info.')
+        message.channel instanceof Discord.DMChannel ? message.reply('You can do `t!help` to see command info.') : message.reply('you can do `t!help` to see command info.');
       } else { message.reply(`I could not recognize that command. Did you mean \`t!${closest(command, ['help', 'account', 'results', 'dq', 'set', 'announce', 'mm', 'search'])}\`?`); }
       return;
     }
@@ -112,11 +112,12 @@ client.on('message', message => {
 
     // TODO:
     // Need to add doubles/teams support to DQ pinging
-    // for event name/number stop dq pinging when reached grand finals
+    // for event name stop dq pinging when reached grand finals
     // allow people to choose multiple events with event number
     // simplify one/two variables into mini for loop
     // DQ pinging can be rewritten to be more efficient and readable
-    if (message.channel instanceof Discord.DMChannel) { sendMessage(message, 'I cannot run this command in DMs.'); }//do not execute
+    // Catch for event name if the event could not be found
+    if (message.channel instanceof Discord.DMChannel) { sendMessage(message, 'I cannot run this command in DMs.'); } //do not execute
     else if (message.member.hasPermission('ADMINISTRATOR')) {
       let dqArgs = message.content.split(' ');
       dqArgs.shift();
@@ -620,5 +621,5 @@ You can also get pinged by going to **Connected Accounts** on smash.gg and displ
 
 });
 
-//client.login(ALTDISCORDTOKEN);
+// client.login(ALTDISCORDTOKEN);
 client.login(DISCORDTOKEN);
