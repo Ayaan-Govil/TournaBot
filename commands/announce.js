@@ -65,6 +65,12 @@ module.exports = {
                                     checkInBuffer
                                     checkInDuration
 			                            }
+                                  streams {
+                                    isOnline
+                                    streamSource
+                                    streamGame
+                                    streamName
+                                  }
 		                            }
 	                            }`;
                   // Query basic tournament info
@@ -87,6 +93,37 @@ module.exports = {
                         let tournamentname = `**${data.data.tournament.name}**`;
                         let events = data.data.tournament.events;
                         let cityTimezone;
+
+                        // Streams, the code is pretty spaghetti
+                        let streamAnnouncementMessage = "";
+                        let streamData = data.data.tournament.streams;
+                        if (streamData != null) {
+                          console.log(data.data.tournament.streams);
+                          // Check that somebody is streaming the tournament.
+                          let numStreaming = 0;
+                          for (let i = 0; i < streamData.length; i++) {
+                            let stream = streamData[i];
+                            console.log(stream);
+                            if (stream.isOnline) { // Ideally would also check if the stream's game matches the tournament game
+                              numStreaming++;
+                            }
+                          }
+                          console.log(numStreaming);
+                          if (numStreaming > 0) {
+                            streamAnnouncementMessage = "Streams:\n";
+                            for (let i = 0; i < streamData.length; i++) {
+                              let stream = streamData[i];
+                              if (stream.isOnline) {
+                                if (stream.streamSource == "TWITCH") {
+                                  streamAnnouncementMessage = streamAnnouncementMessage +  `**https://twitch.tv/${stream.streamName}**`; // Dunno if this works always
+                                } else {
+                                  streamAnnouncementMessage = streamAnnouncementMessage + `**${stream.streamName}'s ${stream.streamSource.substring(0, 1).toUpperCase() + stream.streamSource.substring(1).toLowerCase()} channel**`; // Might not work with Facebook Gaming
+                                }
+                              }
+                            }
+                          }
+                          console.log(streamAnnouncementMessage);
+                        }
 
                         timezoneModel.find({
                           guildid: guildID
@@ -143,15 +180,17 @@ Check-in opens at ${convertEpochToClock(events[i].startAt - events[i].checkInBuf
                                 sendAnnouncement(false);
                               } else { sendMessage(message, `I could not understand whether to ping or not. Do \`t!help\` to get command info.
 
-Command format: \`t!announce <tournament URL/smash.gg short URL> <ping/no ping>\`         
+Command format: \`t!announce <tournament URL/smash.gg short URL> <ping/no ping>\`
 `) }
                               function sendAnnouncement(ping) {
                                 let finalAnnounceMessage = `${tournamentAnnounceMessage} ${tournamentURL}
 
-Registration closes on ${registrationCloseTime}. 
+Registration closes on ${registrationCloseTime}.
 
 Events:
-${eventNames.join(``)}`;
+${eventNames.join(``)}
+
+${streamAnnouncementMessage}`;
                                 languageModel.find({
                                   guildid: guildID
                                 }, function (err, result) {
