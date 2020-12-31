@@ -98,17 +98,14 @@ module.exports = {
                         let streamAnnouncementMessage = "";
                         let streamData = data.data.tournament.streams;
                         if (streamData != null) {
-                          console.log(data.data.tournament.streams);
                           // Check that somebody is streaming the tournament.
                           let numStreaming = 0;
                           for (let i = 0; i < streamData.length; i++) {
                             let stream = streamData[i];
-                            console.log(stream);
                             if (stream.isOnline) { // Ideally would also check if the stream's game matches the tournament game
                               numStreaming++;
                             }
                           }
-                          console.log(numStreaming);
                           if (numStreaming > 0) {
                             streamAnnouncementMessage = "Streams:\n";
                             for (let i = 0; i < streamData.length; i++) {
@@ -122,7 +119,6 @@ module.exports = {
                               }
                             }
                           }
-                          console.log(streamAnnouncementMessage);
                         }
 
                         timezoneModel.find({
