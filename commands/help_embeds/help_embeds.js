@@ -1,37 +1,37 @@
 const Discord = require('discord.js');
 
 const generateHelpSelection = index => {
-  const label = 'React with the corresponding emojis to navigate commands:';
+  const label = '`Respond with the corresponding category to navigate commands:`';
   const descriptions = [`
-:small_orange_diamond: **Accounts** - 1️⃣
+:small_orange_diamond: **Accounts**
 
 TournaBot handles the account-linking between smash.gg and Discord manually. Several commands are account-based. 
 
-:small_orange_diamond: **User Tournament Results** - 2️⃣
+:small_orange_diamond: **User Tournament Results**
 
-Details and sets from a user's three latest tournaments. A user must have their accounts linked to see their results (see **Accounts**).
+Details and sets from a user's three latest tournaments. A user must have their accounts linked to see their results (see **Accounts**).  *You may also respond with \`results\` to see this category.*
 
-:small_orange_diamond: **DQ Pinging (automatic match calling)** - 3️⃣
+:small_orange_diamond: **DQ Pinging (automatic match calling)**
 
 Pings users in a specified channel about a minute after their set is called (a minute after DQ timer has started).
 
-:small_orange_diamond: **Tournament Announcing** - 4️⃣
+:small_orange_diamond: **Tournament Announcing**
 
 Announces a given tournament with registration/event times and additional info.
 `, `
-:small_orange_diamond: **Localization** - 5️⃣
+:small_orange_diamond: **Localization**
 
 Access complete localization through customizable timezones and languages.
 
-:small_orange_diamond: **Matchmaking** - 6️⃣
+:small_orange_diamond: **Matchmaking**
 
 Discord role-based matchmaking to another level, which enables users to specify whether or not they want to be pinged for a role.
 
-:small_orange_diamond: **Tournament Searching** - 7️⃣
+:small_orange_diamond: **Tournament Searching**
 
 Search for smash.gg tournaments by game directly in your Discord server.
 
-:small_orange_diamond: **More Info** - 8️⃣
+:small_orange_diamond: **More Info**
 
 Still need help? You can find the support server, developer/owner's contact information, and more, here.
 `];
@@ -84,6 +84,8 @@ const generateResultsEmbed = index => {
 > \`t!results <Discord tag with/without @ (optional)>\`
 
 Details and sets from a user's three latest tournaments. Providing no arguments will give you your own results. A user must have their accounts linked to see their results (see **Accounts**).
+
+Please keep in mind that the search algorithm will find up to 15 tournaments, including admined/spectated tournaments. It may not show three tournaments if a user has admined/spectated multiple tournaments.
 `)
     .setImage('https://i.imgur.com/G4LzGzX.png')
     .setFooter(`Command 1 of 1`, 'https://cdn.discordapp.com/attachments/719461475848028201/777094320531439636/image.png');
@@ -136,12 +138,13 @@ Sets the message shown in the announcement. Providing no arguments will reset th
 Default message: \`The registration for <tournament name> is up:\`
 
 Announcements are formatted as such: 
-\`\`\`<message> <URL>
+\`\`\`<announce message> <URL>
 
 <registration end time>
 
 <event name and start time>
 <check-in time (if enabled)>\`\`\`
+Keep in mind that \`<announce message>\` is the message that YOU specify. The rest is of the announcement is automatically done by TournaBot.
 `, `
 > \`t!set pingrole <@role/role name (optional)>\`
 
