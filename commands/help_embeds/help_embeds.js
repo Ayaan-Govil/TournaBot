@@ -13,11 +13,11 @@ Details and sets from a user's three latest tournaments. A user must have their 
 
 :small_orange_diamond: **DQ Pinging (automatic match calling)**
 
-Pings users in a specified channel about a minute after their set is called (a minute after DQ timer has started).
+Pings users in a specified channel about a minute after their set is called (a minute after DQ timer has started). *You may also respond with \`dq pinging\` to see this category.*
 
 :small_orange_diamond: **Tournament Announcing**
 
-Announces a given tournament with registration/event times and additional info.
+Announces a given tournament with registration/event times and additional info. *You may also respond with \`announcing\` to see this category.*
 `, `
 :small_orange_diamond: **Localization**
 
@@ -29,7 +29,7 @@ Discord role-based matchmaking to another level, which enables users to specify 
 
 :small_orange_diamond: **Tournament Searching**
 
-Search for smash.gg tournaments by game directly in your Discord server.
+Search for smash.gg tournaments by game directly in your Discord server. *You may also respond with \`searching\` to see this category.*
 
 :small_orange_diamond: **More Info**
 
