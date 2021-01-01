@@ -51,6 +51,8 @@ const generateAccountsEmbed = index => {
 > \`t!account link <smash.gg profile URL>\`
 
 Links your smash.gg account and Discord account together, allowing TournaBot to do tasks between Discord and smash.gg. All information stored is public (Discord tag, Discord ID, and URL slug).
+
+Please read [this](https://help.smash.gg/en/articles/4100961-user-profiles) if you do not know how/where to find your profile.
 `, `
 > \`t!account unlink\`
 
@@ -143,7 +145,9 @@ Announcements are formatted as such:
 <registration end time>
 
 <event name and start time>
-<check-in time (if enabled)>\`\`\`
+<check-in time (if enabled)>
+
+<streams>\`\`\`
 Keep in mind that \`<announce message>\` is the message that YOU specify. The rest is of the announcement is automatically done by TournaBot.
 `, `
 > \`t!set pingrole <@role/role name (optional)>\`
@@ -152,9 +156,11 @@ Sets the role to ping when announcing a tournament. Providing no arguments will 
 `, `
 > \`t!announce <tournament URL/smash.gg short URL> <ping/no ping>\`
 
-Announces a given tournament with registration/event times and additional info. Using the short URL will always send the latest tournament linked to the URL. 
+Announces a given tournament with registration/event times, streams, and additional info. Using the short URL will always send the latest tournament linked to the URL. 
+
+Please read [this](https://help.smash.gg/en/articles/1465692-adding-streams-and-creating-stations) if you do not know how/where to set up streams on smash.gg.
 `];
-  const examples = ['https://i.imgur.com/6L75GCI.png', 'https://i.imgur.com/YVDnWo0.png', 'https://i.imgur.com/IH6PZjD.png', 'https://i.imgur.com/Ha3eafU.png'];
+  const examples = ['https://i.imgur.com/6L75GCI.png', 'https://i.imgur.com/YVDnWo0.png', 'https://i.imgur.com/IH6PZjD.png', 'https://i.imgur.com/TXZYBZD.png'];
   const thumbnails = ['https://i.imgur.com/wZ9IbTf.png', 'https://i.imgur.com/TO7tlrA.png', 'https://i.imgur.com/OpbRMIM.png'];
 
   const announceEmbed = new Discord.MessageEmbed()
