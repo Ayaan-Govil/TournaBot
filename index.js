@@ -5,8 +5,11 @@ const database = require('./database/database');
 const fetch = require('node-fetch');
 const urllib = require('urllib');
 const replaceall = require('replaceall');
+const accurateInterval = require('accurate-interval');
+const setAccurateTimeout = require('set-accurate-timeout');
 const { closest } = require('fastest-levenshtein');
 const { convertEpochToClock, sendMessage } = require('./functions');
+const remindLoop = require('./remind_loop');
 const fs = require('fs');
 
 const client = new Discord.Client();
@@ -24,30 +27,23 @@ const channelModel = require('./database/models/channel');
 const accountModel = require('./database/models/account');
 
 // Maps used for tracking DQ pinging
-const reminderMap = new Map();
+const dqReminderMap = new Map();
 const dqPingingMap = new Map();
-
-
 
 // Keep in mind that I (creator of TournaBot) am still a fairly inexperienced coder. I'll try to improve my own code as I learn more.
 
+// Reminders + DQ Pinging are currently located in index.js for async tasking, however, I would like to seperate them entirely into seperate files/processes while still retaining async.
 
-
-// On Discord client ready, inform in console
+// On Discord client ready
 client.once('ready', () => {
   console.log(`Ready at ${convertEpochToClock(Date.now() / 1000, 'America/Los_Angeles', true)}`);
   database.then(() => console.log('Connected to MongoDB')).catch(err => console.log(err));
-  client.user.setActivity('for t!help', { type: 'WATCHING' });
-});
+  client.user.setActivity('for t!help - NEW UPDATE', { type: 'WATCHING' });
 
-// Not sending join message to each user until bot becomes verified
-// On user joining a Discord server, send message to user
-// client.on('guildMemberAdd', member => {
-//   const welcomeEmbed = new Discord.MessageEmbed()
-//     .setColor('#222326')
-//     .setDescription(`Welcome to ${member.guild.name}! Link your smash.gg account with your Discord account by doing \`t!account link <smash.gg profile URL>\`. You can link in DMs or servers. Do \`t!results\` to test it out!`);
-//   member.send(welcomeEmbed).catch(err => console.log(err));
-// });
+  // Loop for tracking and setting tournament reminders
+  // Comment this function out for development unrelated to it
+  remindLoop(client);
+});
 
 // On bot being invited to a Discord server, send message
 client.on('guildCreate', guild => {
@@ -71,7 +67,6 @@ client.on('message', message => {
 
   if (!message.content.startsWith(PREFIX) || message.author.bot) return;
 
-  //const args = message.content.slice(PREFIX.length).trim().split(/ +/);
   const command = message.content.slice(PREFIX.length).trim().split(/ +/).shift().toLowerCase();
   if (command != 'dq') {
 
@@ -83,7 +78,7 @@ client.on('message', message => {
     }
 
     try {
-      client.commands.get(command).execute(message, client);
+      client.commands.get(command).execute(message, client, message);
     } catch (err) {
       console.log(err);
     }
@@ -114,7 +109,7 @@ client.on('message', message => {
     // Need to add doubles/teams support to DQ pinging
     // for event name stop dq pinging when reached grand finals
     // allow people to choose multiple events with event number
-    // simplify one/two variables into mini for loop
+    // simplify one/two variables into loop
     // DQ pinging can be rewritten to be more efficient and readable
     // Catch for event name if the event could not be found
     if (message.channel instanceof Discord.DMChannel) { sendMessage(message, 'I cannot run this command in DMs.'); } //do not execute
@@ -133,7 +128,7 @@ Possible arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``);
             // Step 2
             if (dqArgs.length >= 2) {
               dqArgs.shift();
-              if (dqPingingMap.get(message.guild.id) === undefined) {
+              if (!dqPingingMap.has(message.guild.id)) {
                 var dqchannel;
                 if (dqArgs[0].startsWith('smash.gg/')) {
                   // Find path of short URL and parse URL for slug
@@ -252,13 +247,13 @@ Possible arguments: \`ping <tournament URL or smash.gg short URL>\`, \`stop\``);
                           .setDescription(`If your username shows up in **bold**, make sure to link your account via \`t!account link <smash.gg profile URL>\` (DMs or server) in order to get pinged!
 
 You can also get pinged by going to **Connected Accounts** on smash.gg and displaying your Discord account on your profile.`);
-                        dqchannel.send(reminderEmbed);
 
-                        reminderMap.set(message.guild.id, setInterval(function () {
+                        // Need to create intuitive algorithm for linking reminders
+                        dqReminderMap.set(message.guild.id, accurateInterval(function () {
                           dqchannel.send(reminderEmbed);
-                        }, 7200000));
+                        }, 7200000, { immediate: true }));
 
-                        dqPingingMap.set(message.guild.id, setInterval(function () {
+                        dqPingingMap.set(message.guild.id, accurateInterval(function () {
                           if (Date.now() < tournamentEnd) {
                             if (Date.now() < autoStop) {
                               query = `query EventSets($slug: String) {
@@ -290,7 +285,6 @@ You can also get pinged by going to **Connected Accounts** on smash.gg and displ
                                       }
                                     } 
                                   }`;
-
                               fetch('https://api.smash.gg/gql/alpha', {
                                 method: 'POST',
                                 headers: {
@@ -404,7 +398,7 @@ You can also get pinged by going to **Connected Accounts** on smash.gg and displ
                                         let calledWave = [activeEvents[e].sets.nodes];
                                         if (!(calledWave == undefined)) {
                                           for (w = 0; w < calledWave.length; w++) {
-                                            // console.log('wave found');
+                                            console.log('wave found');
                                             if (calledWave[w] === null) {
                                               // console.log('no dq timers');
                                             } else {
@@ -575,22 +569,26 @@ You can also get pinged by going to **Connected Accounts** on smash.gg and displ
                                   }
                                 }).catch(err => console.log(err));
                             } else {
-                              clearInterval(dqPingingMap.get(message.guild.id));
-                              clearInterval(reminderMap.get(message.guild.id));
+                              let dqLoop = dqPingingMap.get(message.guild.id);
+                              let dqReminderLoop = dqReminderMap.get(message.guild.id);
+                              if (dqLoop) dqLoop.clear();
+                              if (dqReminderLoop) dqReminderLoop.clear();
                               dqPingingMap.delete(message.guild.id);
-                              reminderMap.delete(message.guild.id);
+                              dqReminderMap.delete(message.guild.id);
                               sendMessage(message, 'Stopping DQ pinging - automatically end DQ pinging after six hours.');
                               console.log(`auto stopped after six hours in ${message.guild.name}`);
                             }
                           } else {
-                            clearInterval(dqPingingMap.get(message.guild.id));
-                            clearInterval(reminderMap.get(message.guild.id));
+                            let dqLoop = dqPingingMap.get(message.guild.id);
+                            let dqReminderLoop = dqReminderMap.get(message.guild.id);
+                            if (dqLoop) dqLoop.clear();
+                            if (dqReminderLoop) dqReminderLoop.clear();
                             dqPingingMap.delete(message.guild.id);
-                            reminderMap.delete(message.guild.id);
+                            dqReminderMap.delete(message.guild.id);
                             sendMessage(message, 'Stopping DQ pinging - tournament has ended. If this is a mistake, check the tournament end time on smash.gg.');
                             console.log(`auto stopped in ${message.guild.name} because tournament ended`);
                           }
-                        }, 5000));
+                        }, 5000, { immediate: true }));
                       } else { sendMessage(message, 'I could not start DQ pinging - tournament has not started.'); }
                     }
                   } else { sendMessage(message, `I could not start DQ pinging - no DQ pinging channel set. Do \`t!set dqpingchannel <#channel>\` to set DQ pinging channel.`); }
@@ -602,9 +600,11 @@ You can also get pinged by going to **Connected Accounts** on smash.gg and displ
           // t!dq stop
           case 'stop':
             // Step 7
-            clearInterval(dqPingingMap.get(message.guild.id));
-            clearInterval(reminderMap.get(message.guild.id));
-            if (dqPingingMap.delete(message.guild.id) && reminderMap.delete(message.guild.id)) {
+            let dqLoop = dqPingingMap.get(message.guild.id);
+            let dqReminderLoop = dqReminderMap.get(message.guild.id);
+            if (dqLoop) dqLoop.clear();
+            if (dqReminderLoop) dqReminderLoop.clear();
+            if (dqPingingMap.delete(message.guild.id) && dqReminderMap.delete(message.guild.id)) {
               sendMessage(message, 'DQ Pinging has stopped! :white_check_mark:');
               console.log(`TO stopped pinging in ${message.guild.name}`);
             } else {
