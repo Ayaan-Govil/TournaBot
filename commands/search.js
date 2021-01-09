@@ -51,6 +51,8 @@ module.exports = {
                                 name
                                 slug
                                 images {
+                                  height
+                                  width
                                   url
                                 }
                               }
@@ -76,22 +78,20 @@ module.exports = {
             for (i = 0; i < upcomingTournaments.length; i++) {
               tournamentArray[i].push(upcomingTournaments[i]);
             }
+            //if (tournamentArray[index][0]
             const generateEmbed = index => {
-              let iconurl;
-              let backgroundurl;
-              // replace below with ternary operator
-              if (tournamentArray[index][0].images[0]) {
-                iconurl = tournamentArray[index][0].images[0].url;
-              }
-              if (tournamentArray[index][0].images[1]) {
-                backgroundurl = tournamentArray[index][0].images[1].url;
+              let imageurl = ['', ''];
+              for (let image of tournamentArray[index][0].images) {
+                if (image) {
+                  image.height === image.width ? imageurl[0] = image.url : imageurl[1] = image.url;
+                }
               }
               const results = new Discord.MessageEmbed()
                 .setColor('#222326')
                 .setTitle(tournamentArray[index][0].name)
                 .setURL(`https://smash.gg/${tournamentArray[index][0].slug}`)
-                .setThumbnail(iconurl)
-                .setImage(backgroundurl)
+                .setThumbnail(imageurl[0])
+                .setImage(imageurl[1])
                 .setFooter(`Tournament ${index + 1} of 10`, 'https://cdn.discordapp.com/attachments/719461475848028201/777094320531439636/image.png');
               return results;
             }
