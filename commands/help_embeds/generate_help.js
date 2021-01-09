@@ -1,6 +1,7 @@
 // const Discord = require('discord.js');
-const generateHelp = (message, client, generateEmbed, commandAmount) => {
-  message.reactions.removeAll().catch(err => console.log(err));
+// If there's an API error on method patch, it's perfectly fine.
+const generateHelp = (message, client, generateEmbed, commandAmount, userMessage) => {
+  message.reactions.removeAll().catch(err => { });
 
   let currentIndex = 0;
   message.edit(generateEmbed(currentIndex)).then(message => {
@@ -30,7 +31,7 @@ const generateHelp = (message, client, generateEmbed, commandAmount) => {
           message.edit(generateEmbed(currentIndex)).catch(err => console.log(err));
         }
       } else {
-        client.commands.get('help').execute(message, client);
+        client.commands.get('help').execute(message, client, userMessage);
         message.delete().catch(err => console.log(err));
       }
     });
