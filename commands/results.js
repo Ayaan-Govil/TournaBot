@@ -128,11 +128,7 @@ module.exports = {
             guildid: guildID
           }, function (err, result) {
             if (err) throw err;
-            if (result.length) {
-              cityTimezone = result[0].timezone;
-            } else {
-              cityTimezone = 'America/Los_Angeles';
-            }
+            result.length ? cityTimezone = result[0].timezone : cityTimezone = 'America/Los_Angeles';
           }).catch(err => console.log(err));
         }).then(function () {
           // Second query for tournament info, recurses if identifies a tournament as a spectated/TO'd (but can be done iteratively)
@@ -390,9 +386,7 @@ module.exports = {
                         if (err) throw err;
                         sendResults(palette.Vibrant._rgb);
                       }).catch(err => console.log(err));
-                    } else {
-                      sendResults('#222326');
-                    }
+                    } else sendResults('#222326');
 
                     function sendResults(sideColor) {
                       const generateResults = index => {
