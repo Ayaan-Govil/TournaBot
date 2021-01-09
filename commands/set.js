@@ -193,6 +193,7 @@ New announcement message: ${setArgs}`);
             break;
 
           // t!set timezone <city>
+          // Add support for localization in DMs
           case 'timezone':
             if (setArgs.length === 2) {
               setArgs.shift();
