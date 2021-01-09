@@ -107,8 +107,8 @@ module.exports = {
                         //   //}
                         // }
                         //if (numStreaming > 0) {
-                        for (i = 0; i < streamData.length; i++) {
-                          let stream = streamData[i];
+                        for (let stream of streamData) {
+                          //let stream = streamData[i];
                           //if (stream.isOnline) {
                           if (stream.streamSource == 'TWITCH') {
                             streamAnnouncementMessage.push(`https://twitch.tv/${stream.streamName}\n`);
