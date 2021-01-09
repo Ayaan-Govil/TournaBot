@@ -15,23 +15,23 @@ function convertEpoch(epoch, citytimezone) {
   let timezone = date.toLocaleString('default', { timeZoneName: 'short', timeZone: citytimezone });
   let firstTen = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09'];
   let ampm;
+
   if (monthDate.startsWith(0)) {
     monthDate = monthDate.slice(1);
   }
-  // replace below with ternary operator
-  if (hour.includes('PM')) {
-    ampm = 'PM';
-  } else {
-    ampm = 'AM';
-  }
+
+  hour.includes('PM') ? ampm = 'PM' : ampm = 'AM';
   hour = hour.replace(/\D/g, '');
   if (hour.startsWith(0)) {
     hour = hour.slice(1);
   }
+
   if (minutes.length === 1) {
     minutes = firstTen[minutes];
   }
+
   timezone = timezone.slice(timezone.length - 3);
+
   convertedTime = `${dayOfTheWeek}, ${month} ${monthDate}, ${year}, at ${hour}:${minutes} ${ampm} ${timezone}`;
   return convertedTime;
 }
@@ -45,30 +45,27 @@ function convertEpochToClock(epoch, citytimezone, showSeconds) {
   let firstTen = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09'];
   let seconds = '';
   let ampm;
-  // replace below with ternary operator
-  if (hour.includes('PM')) {
-    ampm = 'PM';
-  } else {
-    ampm = 'AM';
-  }
+
+  hour.includes('PM') ? ampm = 'PM' : ampm = 'AM';
   hour = hour.replace(/\D/g, '');
   if (hour.startsWith(0)) {
     hour = hour.slice(1);
   }
+
   if (minutes.length === 1) {
     minutes = firstTen[minutes];
   }
+
   if (showSeconds) {
-    if (seconds.length === 1) {
-      seconds = `:${firstTen[date.getSeconds()]}`
-    } else {
-      seconds = `:${date.getSeconds()}`;
-    }
+    seconds = `${date.getSeconds()}`;
+    seconds.length === 1 ? seconds = `:${firstTen[seconds]}` : seconds = `:${seconds}`;
   }
+
   convertedTime = `${hour}:${minutes}${seconds} ${ampm}`;
   return convertedTime;
 }
 
+// Use string parsing to remove the need to set two different messages in replies with special formatting
 function sendMessage(message, specifiedMessage, messageType) {
   let guildID;
   !message.guild ? guildID = '' : guildID = message.guild.id;
