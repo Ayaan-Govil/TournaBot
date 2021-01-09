@@ -6,7 +6,6 @@ const fetch = require('node-fetch');
 const urllib = require('urllib');
 const replaceall = require('replaceall');
 const accurateInterval = require('accurate-interval');
-const setAccurateTimeout = require('set-accurate-timeout');
 const { closest } = require('fastest-levenshtein');
 const { convertEpochToClock, sendMessage } = require('./functions');
 const remindLoop = require('./remind_loop');
