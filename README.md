@@ -22,6 +22,8 @@ Please check out [TournaBot's top.gg page](https://top.gg/bot/719283403698077708
 
 ## Main Features
 
+- **Automatic tournament reminders** an hour before your tournaments begin, which provide tournament/event information.
+
 - **Automatic match calling** called DQ pinging, which automatically pings users in a specified channel a minute after their match has been called.
 
 - **User tournament results** that include details and sets from a user's three latest tournaments.
