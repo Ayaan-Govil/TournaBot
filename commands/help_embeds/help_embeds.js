@@ -1,11 +1,14 @@
 const Discord = require('discord.js');
 
 const generateHelpSelection = index => {
-  const label = '`Respond with the corresponding category to navigate commands:`';
   const descriptions = [`
 :small_orange_diamond: **Accounts**
 
-TournaBot handles the account-linking between smash.gg and Discord manually. Several commands are account-based. 
+TournaBot handles the account-linking between smash.gg and Discord manually. Several commands are account-based.
+
+:small_orange_diamond: **Tournament Reminders (BETA)**
+
+Automatic reminders for your tournaments an hour before they begin. A user must have their accounts linked to activate tournament reminders (see **Accounts**). *You may also respond with \`tournament reminders\` or \`reminders\` to see this category.*
 
 :small_orange_diamond: **User Tournament Results**
 
@@ -37,9 +40,7 @@ Still need help? You can find the support server, developer/owner's contact info
 `];
   const helpSelectionEmbed = new Discord.MessageEmbed()
     .setColor('#222326')
-    .setDescription(`
-${label}
-${descriptions[index]}`)
+    .setDescription(descriptions[index])
     .setFooter(`Page ${index + 1} of 2`, 'https://cdn.discordapp.com/attachments/719461475848028201/777094320531439636/image.png');
 
   return helpSelectionEmbed;
@@ -75,6 +76,29 @@ ${descriptions[index]}`)
   if (index === 2) accountsEmbed.setThumbnail('https://i.imgur.com/gUwhkw3.png');
 
   return accountsEmbed;
+}
+
+const generateReminderEmbed = index => {
+  const label = '**Tournament Reminders (BETA)**';
+  const descriptions = [`
+> \`t!remind\`
+
+Toggles your tournament reminders. As long as your accounts are linked prior to toggling on, you will always automatically be pinged an hour before any tournament you sign-up for. You can go to the next page to see what the reminders look like.
+
+*PLEASE NOTE: By toggling on tournament reminders, you consent to TournaBot direct messaging you on Discord automatically.*
+`, `
+Tournament reminders include basic tournament/event information, all stored in a singular embed. Keep in mind that if you are not in at least one server with TournaBot, it cannot message you. for For the sake of testing, the timestamp on the example is not the one it would be normally.`];
+  const examples = ['https://i.imgur.com/XNFHbeJ.png', 'https://i.imgur.com/tWRgaIm.png'];
+
+  const reminderEmbed = new Discord.MessageEmbed()
+    .setColor('#222326')
+    .setDescription(`
+${label}
+${descriptions[index]}`)
+    .setImage(examples[index])
+    .setFooter(`Page ${index + 1} of 2`, 'https://cdn.discordapp.com/attachments/719461475848028201/777094320531439636/image.png');
+
+  return reminderEmbed;
 }
 
 const generateResultsEmbed = index => {
@@ -276,6 +300,7 @@ const generateInfoEmbed = index => {
 module.exports = {
   generateHelpSelection: generateHelpSelection,
   generateAccountsEmbed: generateAccountsEmbed,
+  generateReminderEmbed: generateReminderEmbed,
   generateResultsEmbed: generateResultsEmbed,
   generateDQPingingEmbed: generateDQPingingEmbed,
   generateAnnounceEmbed: generateAnnounceEmbed,
