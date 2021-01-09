@@ -13,6 +13,7 @@ module.exports = {
   name: 'account',
   description: 'Linking, unlinking, and status for accounts.',
   execute(message) {
+    // ADD SMASHDATA.GG PROFILE SUPPORT
     let accountArgs = message.content.split(' ');
     accountArgs.shift();
 
@@ -38,11 +39,9 @@ Possible arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
               }, function (err, result) {
                 if (err) throw err;
                 if (result.length) {
-                  accountModel.replaceOne({
+                  accountModel.updateOne({
                     discordid: discordID
                   }, {
-                    discordtag: discordTag,
-                    discordid: discordID,
                     profileslug: accountSlug
                   },
                     function (err, result) {
@@ -54,7 +53,8 @@ Possible arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                   let accountLinking = new accountModel({
                     discordtag: discordTag,
                     discordid: discordID,
-                    profileslug: accountSlug
+                    profileslug: accountSlug,
+                    reminder: false
                   }).save().then(result => message.channel instanceof Discord.DMChannel ? sendMessage(message, '**Your Discord account and smash.gg account are now linked!**', 'REPLY') : sendMessage(message, '**your Discord account and smash.gg account are now linked!**', 'REPLY'), console.log(`linked ${discordTag}`)).catch(err => console.log(err));
                 }
               }).catch(err => console.log(err));
@@ -183,11 +183,7 @@ Possible arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                           let attendeeArray = [];
                           for (a = 0; a < attendeeNames.length; a++) {
                             let attendeeString;
-                            if (attendeeBools[a]) {
-                              attendeeString = `${attendeeNames[a]} :white_check_mark:`;
-                            } else {
-                              attendeeString = `${attendeeNames[a]} :x:`;
-                            }
+                            attendeeBools[a] ? attendeeString = `${attendeeNames[a]} :white_check_mark:` : attendeeString = `${attendeeNames[a]} :x:`;
                             attendeeArray.push(attendeeString);
                           }
 
