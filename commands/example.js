@@ -8,6 +8,8 @@ const urllib = require('urllib');
 const Vibrant = require('node-vibrant');
 const replaceall = require('replaceall');
 const { distance, closest } = require('fastest-levenshtein');
+const accurateInterval = require('accurate-interval');
+const setAccurateTimeout = require('set-accurate-timeout');
 const mongoose = require('mongoose');
 const { convertEpoch, convertEpochToClock, sendMessage } = require('../functions');
 
