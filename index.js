@@ -29,7 +29,7 @@ const accountModel = require('./database/models/account');
 const dqReminderMap = new Map();
 const dqPingingMap = new Map();
 
-// Keep in mind that I (creator of TournaBot) am still a fairly inexperienced coder. I'll try to improve my own code as I learn more.
+// Keep in mind that I (creator of TournaBot) am still a relatively inexperienced coder. I'll try to improve my own code as I learn more.
 
 // Reminders + DQ Pinging are currently located in index.js for async tasking, however, I would like to seperate them entirely into seperate files/processes while still retaining async.
 
@@ -37,7 +37,7 @@ const dqPingingMap = new Map();
 client.once('ready', () => {
   console.log(`Ready at ${convertEpochToClock(Date.now() / 1000, 'America/Los_Angeles', true)}`);
   database.then(() => console.log('Connected to MongoDB')).catch(err => console.log(err));
-  client.user.setActivity('for t!help - NEW UPDATE', { type: 'WATCHING' });
+  client.user.setActivity('for t!help - v4.1.0', { type: 'WATCHING' });
 
   // Loop for tracking and setting tournament reminders
   // Comment this function out for development unrelated to it
@@ -397,7 +397,7 @@ You can also get pinged by going to **Connected Accounts** on smash.gg and displ
                                         let calledWave = [activeEvents[e].sets.nodes];
                                         if (!(calledWave == undefined)) {
                                           for (w = 0; w < calledWave.length; w++) {
-                                            console.log('wave found');
+                                            // console.log('wave found');
                                             if (calledWave[w] === null) {
                                               // console.log('no dq timers');
                                             } else {
