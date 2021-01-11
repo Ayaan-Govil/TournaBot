@@ -67,8 +67,8 @@ function convertEpochToClock(epoch, citytimezone, showSeconds) {
 
 // Use string parsing to remove the need to set two different messages in replies with special formatting
 function sendMessage(message, specifiedMessage, messageType) {
-  let guildID;
-  !message.guild ? guildID = '' : guildID = message.guild.id;
+  let guildID = '';
+  !message.guild ? guildID = message.channel.id : guildID = message.guild.id;
   languageModel.find({
     guildid: guildID
   }, function (err, result) {
