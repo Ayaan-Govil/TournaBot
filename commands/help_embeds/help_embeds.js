@@ -83,11 +83,12 @@ const generateReminderEmbed = index => {
   const descriptions = [`
 > \`t!remind\`
 
-Toggles your tournament reminders. As long as your accounts are linked prior to toggling on, you will always automatically be pinged an hour before any tournament you sign-up for. You can go to the next page to see what the reminders look like.
+Toggles your tournament reminders. As long as your accounts are linked prior to toggling on, you will always be automatically messaged an hour before any tournament you sign-up for. You can go to the next page to see what the reminders look like.
 
 *PLEASE NOTE: By toggling on tournament reminders, you consent to TournaBot direct messaging you on Discord automatically.*
 `, `
-Tournament reminders include basic tournament/event information, all stored in a singular embed. Keep in mind that if you are not in at least one server with TournaBot, it cannot message you. for For the sake of testing, the timestamp on the example is not the one it would be normally.`];
+Tournament reminders include basic tournament/event information, all stored in a singular embed. Keep in mind that if you are not in at least one server with TournaBot, it cannot message you. for For the sake of testing, the timestamp on the example is not the one it would be normally.
+`];
   const examples = ['https://i.imgur.com/XNFHbeJ.png', 'https://i.imgur.com/tWRgaIm.png'];
 
   const reminderEmbed = new Discord.MessageEmbed()
@@ -205,7 +206,7 @@ const generateLocalizationEmbed = index => {
   const descriptions = [`
 > \`t!set timezone <city>\`
 
-Sets the timezone that TournaBot uses, altering the timestamps shown in \`t!results\` and \`t!announce\`. Providing no arguments will reset the timezone to \`America/Los_Angeles\` (PST/PDT).
+Sets the timezone that TournaBot uses, altering the timestamps shown in tournament reminders, \`t!results\`, and \`t!announce\`. Providing no arguments will reset the timezone to \`America/Los_Angeles\` (PST/PDT).
 
 Currently supported cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`America/Denver\`, \`America/Regina\`, \`America/Chicago\`, \`America/New_York\`, \`Pacific/Honolulu\`
 
