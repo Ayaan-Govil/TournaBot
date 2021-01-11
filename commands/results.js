@@ -122,8 +122,8 @@ module.exports = {
               }
             }
           }
-          let guildID;
-          message.guild === null ? guildID = '' : guildID = message.guild.id;
+          let guildID = '';
+          !message.guild ? guildID = message.channel.id : guildID = message.guild.id;
           timezoneModel.find({
             guildid: guildID
           }, function (err, result) {
