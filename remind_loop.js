@@ -10,10 +10,11 @@ const { convertEpoch, convertEpochToClock } = require('./functions');
 // MongoDB Models
 const accountModel = require('./database/models/account');
 
+const reminderMap = new Map();
+
 async function remindLoop(client) {
   // Map used for tracking reminders
-  // Code cannot ping two tournaments within the same hour for a person, but that shouldn't be an issue
-  const reminderMap = new Map();
+  // Cannot ping two tournaments within the same hour for a person, but that shouldn't be an issue
 
   const loop = accurateInterval(setReminders, 3600000, { immediate: true });
 
@@ -126,7 +127,9 @@ async function remindLoop(client) {
 
                         let streams = [];
                         for (let stream of tournament.streams) {
-                          streams.push(`https://twitch.tv/${stream.streamName}`);
+                          if (stream.streamSource === 'TWITCH') {
+                            streams.push(`https://twitch.tv/${stream.streamName}`);
+                          }
                         }
 
                         const reminderEmbed = new Discord.MessageEmbed()
