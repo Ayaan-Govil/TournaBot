@@ -10,11 +10,11 @@ const { convertEpoch, convertEpochToClock } = require('./functions');
 // MongoDB Models
 const accountModel = require('./database/models/account');
 
+// Map used for tracking reminders
+// Cannot ping two tournaments within the same hour for a person, but that shouldn't be an issue
 const reminderMap = new Map();
 
 async function remindLoop(client) {
-  // Map used for tracking reminders
-  // Cannot ping two tournaments within the same hour for a person, but that shouldn't be an issue
 
   const loop = accurateInterval(setReminders, 3600000, { immediate: true });
 
@@ -28,7 +28,7 @@ async function remindLoop(client) {
       if (err) throw err;
       // Will add delay for one second per iteration or ask for rate limit upgrade if rate limit is reached
       for (let user of result) {
-        console.log(`Iterating through ${user.discordtag}`);
+        //console.log(`Iterating through ${user.discordtag}`);
         let discordID = user.discordid;
         var slug = user.profileslug;
         var query = `query UserUpcomingTournaments($slug: String) {
@@ -86,7 +86,7 @@ async function remindLoop(client) {
               for (let tournament of upcomingTournaments) {
                 if (!reminderMap.has(discordID)) {
                   let timeDiff = tournament.startAt - Date.now() / 1000;
-                  console.log(`Time Difference: ${timeDiff / 3600} Hours`);
+                  //console.log(`Time Difference: ${timeDiff / 3600} Hours`);
                   if (timeDiff <= 7200 && timeDiff >= 3600) {
                     console.log(`Tournament found that is within 1-2 hour constraint at ${convertEpoch(Date.now() / 1000, 'America/Los_Angeles')}. Setting reminder...`);
                     let offset = tournament.startAt * 1000 - Date.now() - 3600000;
@@ -126,9 +126,11 @@ async function remindLoop(client) {
                         }
 
                         let streams = [];
-                        for (let stream of tournament.streams) {
-                          if (stream.streamSource === 'TWITCH') {
-                            streams.push(`https://twitch.tv/${stream.streamName}`);
+                        if (tournament.streams) {
+                          for (let stream of tournament.streams) {
+                            if (stream.streamSource === 'TWITCH') {
+                              streams.push(`https://twitch.tv/${stream.streamName}`);
+                            }
                           }
                         }
 
@@ -161,7 +163,7 @@ ${tournament.numAttendees} Attendees
                   }
                 }
               }
-            } else console.log(`No upcoming tournaments for ${user.discordtag}`);
+            } //else console.log(`No upcoming tournaments for ${user.discordtag}`);
           }).catch(err => console.log(err));
       }
     }).catch(err => console.log(err));
