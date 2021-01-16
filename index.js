@@ -37,7 +37,7 @@ const dqPingingMap = new Map();
 client.once('ready', () => {
   console.log(`Ready at ${convertEpochToClock(Date.now() / 1000, 'America/Los_Angeles', true)}`);
   database.then(() => console.log('Connected to MongoDB')).catch(err => console.log(err));
-  client.user.setActivity('for t!help - v4.1.0', { type: 'WATCHING' });
+  client.user.setActivity('for t!help - v4.1.1', { type: 'WATCHING' });
 
   // Loop for tracking and setting tournament reminders
   // Comment this function out for development unrelated to it
