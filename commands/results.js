@@ -1,8 +1,8 @@
 // Dependencies
 const Discord = require('discord.js');
 const { SMASHGGTOKEN } = require('../config.json');
-const editJsonFile = require('edit-json-file');
-const characterfile = editJsonFile('../database/character_codes.json');
+const characters = require('../database/character_codes.json');
+const characterfile = new Map(Object.entries(characters))
 const fetch = require('node-fetch');
 const Vibrant = require('node-vibrant');
 const replaceall = require('replaceall');
@@ -270,42 +270,26 @@ module.exports = {
                                 }
                                 let charactersPlayed = [[], []];
                                 let setGames = setsdone[s].games;
-                                if (!(setGames === null)) {
+                                if (setGames) {
                                   // For each game played within the set
                                   for (g = 0; g < setGames.length; g++) {
-                                    // Needs to be rewritten 
-                                    if (!(setGames[g].selections === null)) {
-                                      if (!(setGames[g].selections[0] === undefined)) {
-                                        if (setGames[g].selections[0].entrant.id === setsdone[s].slots[0].entrant.id) {
-                                          let charName = characterfile.get(setGames[g].selections[0].selectionValue.toString());
-                                          let charEmoji = client.emojis.cache.find(emoji => emoji.name === charName);
-                                          if (!charactersPlayed[0].includes(charEmoji)) {
-                                            charactersPlayed[0].push(charEmoji);
-                                          }
-                                        } else {
-                                          if (!(setGames[g].selections[1] === undefined)) {
-                                            let charName = characterfile.get(setGames[g].selections[1].selectionValue.toString());
+                                    if (setGames[g].selections) {
+                                      for (c = 0; c < setGames[g].selections.length; c++) {
+                                        if (setGames[g].selections[c]) {
+                                          let altNum = Math.abs(c - 1);
+                                          if (setGames[g].selections[c].entrant.id === setsdone[s].slots[c].entrant.id) {
+                                            let charName = characterfile.get(setGames[g].selections[c].selectionValue.toString());
                                             let charEmoji = client.emojis.cache.find(emoji => emoji.name === charName);
-                                            if (!charactersPlayed[0].includes(charEmoji)) {
-                                              charactersPlayed[0].push(charEmoji);
+                                            if (!charactersPlayed[c].includes(charEmoji)) {
+                                              charactersPlayed[c].push(charEmoji);
                                             }
-                                          }
-                                        }
-                                      }
-
-                                      if (!(setGames[g].selections[1] === undefined)) {
-                                        if (setGames[g].selections[1].entrant.id === setsdone[s].slots[1].entrant.id) {
-                                          let charName = characterfile.get(setGames[g].selections[1].selectionValue.toString());
-                                          let charEmoji = client.emojis.cache.find(emoji => emoji.name === charName);
-                                          if (!charactersPlayed[1].includes(charEmoji)) {
-                                            charactersPlayed[1].push(charEmoji);
-                                          }
-                                        } else {
-                                          if (!(setGames[g].selections[0] === undefined)) {
-                                            let charName = characterfile.get(setGames[g].selections[0].selectionValue.toString());
-                                            let charEmoji = client.emojis.cache.find(emoji => emoji.name === charName);
-                                            if (!charactersPlayed[1].includes(charEmoji)) {
-                                              charactersPlayed[1].push(charEmoji);
+                                          } else {
+                                            if (setGames[g].selections[altNum]) {
+                                              let charName = characterfile.get(setGames[g].selections[altNum].selectionValue.toString());
+                                              let charEmoji = client.emojis.cache.find(emoji => emoji.name === charName);
+                                              if (!charactersPlayed[c].includes(charEmoji)) {
+                                                charactersPlayed[c].push(charEmoji);
+                                              }
                                             }
                                           }
                                         }
