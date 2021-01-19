@@ -37,7 +37,7 @@ const dqPingingMap = new Map();
 client.once('ready', () => {
   console.log(`Ready at ${convertEpochToClock(Date.now() / 1000, 'America/Los_Angeles', true)}`);
   database.then(() => console.log('Connected to MongoDB')).catch(err => console.log(err));
-  client.user.setActivity('for t!help - v4.1.1', { type: 'WATCHING' });
+  client.user.setActivity('for t!help - v4.1.2', { type: 'WATCHING' });
 
   // Loop for tracking and setting tournament reminders
   // Comment this function out for development unrelated to it
@@ -56,7 +56,7 @@ client.on('guildCreate', guild => {
   });
   const joinEmbed = new Discord.MessageEmbed()
     .setColor('#222326')
-    .setDescription(`Thank you for inviting me to ${guild.name}! Information on how to use TournaBot can be found here: https://top.gg/bot/719283403698077708.`);
+    .setDescription(`Thank you for inviting me to ${guild.name}! You can do \`t!help\` to get command info. If you enjoy TournaBot's features, please upvote it on the [top.gg page](https://top.gg/bot/719283403698077708)!`);
   defaultChannel.send(joinEmbed).catch(err => console.log(err));
   console.log('Added to: ' + guild.name);
 });
@@ -298,6 +298,7 @@ You can also get pinged by going to **Connected Accounts** on smash.gg and displ
                               })
                                 .then(r => r.json())
                                 .then(data => {
+                                  console.log(data.data.tournament.events[0])
                                   // STEPS b-f
                                   let activeEvents = data.data.tournament.events
                                   if (!pingEvent) {
@@ -620,5 +621,5 @@ You can also get pinged by going to **Connected Accounts** on smash.gg and displ
 
 });
 
-// client.login(ALTDISCORDTOKEN);
+//client.login(ALTDISCORDTOKEN);
 client.login(DISCORDTOKEN);
