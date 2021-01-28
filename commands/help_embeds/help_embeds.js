@@ -6,15 +6,15 @@ const generateHelpSelection = index => {
 
 TournaBot handles the account-linking between smash.gg and Discord manually. Several commands are account-based.
 
-:small_orange_diamond: **Tournament Reminders (BETA)**
+:small_orange_diamond: **Tournament Reminders**
 
-Automatic reminders for your tournaments an hour before they begin. A user must have their accounts linked to activate tournament reminders (see **Accounts**). *You may also respond with \`tournament reminders\` or \`reminders\` to see this category.*
+Automatic reminders for your tournaments an hour before they begin. You must have their accounts linked to activate tournament reminders (see **Accounts**). *You may also respond with \`tournament reminders\` or \`reminders\` to see this category.*
 
 :small_orange_diamond: **User Tournament Results**
 
 Details and sets from a user's three latest tournaments. A user must have their accounts linked to see their results (see **Accounts**).  *You may also respond with \`results\` to see this category.*
 
-:small_orange_diamond: **DQ Pinging (automatic match calling)**
+:small_orange_diamond: **Automatic Match Calling (DQ Pinging)**
 
 Pings users in a specified channel about a minute after their set is called (a minute after DQ timer has started). *You may also respond with \`dq pinging\` to see this category.*
 
@@ -79,7 +79,7 @@ ${descriptions[index]}`)
 }
 
 const generateReminderEmbed = index => {
-  const label = '**Tournament Reminders (BETA)**';
+  const label = '**Tournament Reminders**';
   const descriptions = [`
 > \`t!remind\`
 
@@ -87,9 +87,9 @@ Toggles your tournament reminders. As long as your accounts are linked prior to 
 
 *PLEASE NOTE: By toggling on tournament reminders, you consent to TournaBot direct messaging you on Discord automatically.*
 `, `
-Tournament reminders include basic tournament/event information, all stored in a singular embed. Keep in mind that if you are not in at least one server with TournaBot, it cannot message you. for For the sake of testing, the timestamp on the example is not the one it would be normally.
+Tournament reminders include basic tournament/event information, all stored in a singular embed. Keep in mind that if you are not in at least one server with TournaBot, it cannot message you.
 `];
-  const examples = ['https://i.imgur.com/XNFHbeJ.png', 'https://i.imgur.com/tWRgaIm.png'];
+  const examples = ['https://i.imgur.com/XNFHbeJ.png', 'https://i.imgur.com/noJpDgz.png'];
 
   const reminderEmbed = new Discord.MessageEmbed()
     .setColor('#222326')
@@ -120,7 +120,7 @@ Please keep in mind that the search algorithm will find up to 15 tournaments, in
 }
 
 const generateDQPingingEmbed = index => {
-  const label = '**DQ Pinging (automatic match calling)**';
+  const label = '**Automatic Match Calling (DQ Pinging)**';
   const descriptions = [`
 > \`t!set dqpingchannel <#channel>\`
 
@@ -277,13 +277,13 @@ const generateSearchEmbed = index => {
 
 > \`t!search <game>\`
 
-Searches for the top 10 upcoming tournaments by game. The \`<game>\` argument is not case-sensitive.
+Searches for upcoming tournaments by game. The \`<game>\` argument is not case-sensitive.
 
 Currently supported games: \`Super Smash Bros. Ultimate\`, \`Valorant\`
 
 Join the support server or contact the developer/owner (see **More Info**) if you need support for a game not shown above.
 `)
-    .setImage('https://i.imgur.com/AzhELPj.png')
+    .setImage('https://i.imgur.com/nesqtNb.png')
     .setFooter(`Command 1 of 1`, 'https://cdn.discordapp.com/attachments/719461475848028201/777094320531439636/image.png');
 
   return searchEmbed;
