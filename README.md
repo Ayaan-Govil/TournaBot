@@ -44,15 +44,15 @@ TournaBot was initially created on Windows, but is compatible with any UNIX-base
 
 To create a Discord bot client, make an application through the [Discord Developer Portal](https://discord.com/developers/applications) and create a client through the **Bot** tab. The bot's **Token** is used for authentication.
 
-#### Dependencies
+### Dependencies
 
-##### Node.js
+#### Node.js
 
 TournaBot uses [Node.js](https://nodejs.org/en/) v12.0.0 or higher.
 
 To install the required npm dependencies, execute `npm run build` through the console within the project folder. If you clone the project using git and the `package.json` file is empty, you can copy and paste the text from the web repository.
 
-##### MongoDB
+#### MongoDB
 
 TournaBot requires a [MongoDB instance](https://www.mongodb.com/basics/create-database) to store data. The production version of TournaBot uses [Mongoose](https://mongoosejs.com/) to connect to a [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) database. If you don't know how to set up a local database, I recommend using [this guide](https://zellwk.com/blog/local-mongodb/).
 
@@ -73,7 +73,7 @@ If there is no collection present for a given model, no data for that model will
 
 Don't be afraid to join the [support/development Discord server](https://discord.gg/ssYPUk6Snc) if you need help setting up the database.
 
-##### Environment Variables
+#### Environment Variables
 
 The following environment variables are required to run TournaBot locally:
 
@@ -86,10 +86,10 @@ Note that within the original production code, `ALTDISCORDTOKEN` is used to auth
 
 The original production code uses a  `config.json` file to store the environment variables, but there are other methods to storing them.
 
-#### Testing
+### Testing
 
 To run TournaBot locally on your machine, execute `node index.js` through a console within the project folder. It is recommended that you use [nodemon](https://www.npmjs.com/package/nodemon) for any testing that requires lots of saving and re-executing.
 
-#### Support/Development
+### Support/Development
 
 For any help you need, feel free to join the [support/development Discord server](https://discord.gg/ssYPUk6Snc) and give yourself the **Contributor** role. This server also contains a list of requested features, incase you want an idea to start!
