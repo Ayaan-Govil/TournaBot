@@ -58,8 +58,6 @@ TournaBot requires a [MongoDB instance](https://www.mongodb.com/basics/create-da
 
 A connection string is required to connect to any database. Read [this](https://mongoosejs.com/docs/connections.html) if you don't know what the connection string should look like. It must be set up **before** running TournaBot. 
 
-Don't be afraid to join the [support/development Discord server](https://discord.gg/ssYPUk6Snc) if you need help setting up the database.
-
 TournaBot uses the following collections for categorizing data:
 
 - `announcemessages`
@@ -71,7 +69,9 @@ TournaBot uses the following collections for categorizing data:
 - `timezones`
 - `userids`
 
-If there is no collection present for a specific model, no data for that model will be collected.
+If there is no collection present for a given model, no data for that model will be collected.
+
+Don't be afraid to join the [support/development Discord server](https://discord.gg/ssYPUk6Snc) if you need help setting up the database.
 
 ##### Environment Variables
 
