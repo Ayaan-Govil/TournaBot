@@ -37,7 +37,7 @@ const dqPingingMap = new Map();
 client.once('ready', () => {
   console.log(`Ready at ${convertEpochToClock(Date.now() / 1000, 'America/Los_Angeles', true)}`);
   database.then(() => console.log('Connected to MongoDB')).catch(err => console.log(err));
-  client.user.setActivity('for t!help - v4.1.3', { type: 'WATCHING' });
+  client.user.setActivity('for t!help - v4.1.4', { type: 'WATCHING' });
 
   // Loop for tracking and setting tournament reminders
   // Comment this function out for development unrelated to it
@@ -111,7 +111,7 @@ client.on('message', message => {
     // simplify one/two variables into loop
     // DQ pinging can be rewritten to be more efficient and readable
     // Catch for event name if the event could not be found
-    if (message.channel instanceof Discord.DMChannel) { sendMessage(message, 'I cannot run this command in DMs.'); } //do not execute
+    if (message.channel instanceof Discord.DMChannel) { sendMessage(message, 'I cannot run this command in DMs.'); }
     else if (message.member.hasPermission('ADMINISTRATOR')) {
       let dqArgs = message.content.split(' ');
       dqArgs.shift();
@@ -256,7 +256,7 @@ You can also get pinged by going to **Connected Accounts** on smash.gg and displ
 
                         // Need to create intuitive algorithm for linking reminders
                         dqReminderMap.set(message.guild.id, accurateInterval(function () {
-                          if (messagesSent === 20) {
+                          if (messagesSent >= 20) {
                             messagesSent = 0;
                             dqChannel.send(reminderEmbed);
                           }
@@ -403,9 +403,7 @@ You can also get pinged by going to **Connected Accounts** on smash.gg and displ
                                           for (d = 0; d < entrantOneAccounts.length; d++) {
                                             if (entrantOneAccounts[d].type === 'DISCORD') {
                                               let userID = message.guild.members.cache.filter(member => member.user.tag === entrantOneAccounts[d].externalUsername).map(member => member.user.id);
-                                              if (userID[0]) {
-                                                entrantMentions[ent] = `<@${userID[0]}>`;
-                                              }
+                                              if (userID[0]) entrantMentions[ent] = `<@${userID[0]}>`;
                                             }
                                           }
                                         }
