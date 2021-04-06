@@ -8,6 +8,7 @@ const announcemessageModel = require('../database/models/announcemessage');
 const pingroleModel = require('../database/models/pingrole');
 const timezoneModel = require('../database/models/timezone');
 const languageModel = require('../database/models/language');
+const prefixModel = require('../database/models/prefix');
 
 module.exports = {
   name: 'set',
@@ -295,6 +296,41 @@ Currently supported cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`Amer
                   sendMessage(message, `The language has been reset to **English (en)**.`);
                 }).catch(err => console.log(err));
               } else { sendMessage(message, 'Something went wrong :confused: . Do \`t!help\` to get command info.'); }
+              break;
+
+            case 'prefix':
+              if (setArgs.length === 2) {
+                setArgs.shift();
+                setArgs = setArgs.join('');
+                prefixModel.find({
+                  guildid: guildID
+                }, function (err, result) {
+                  if (err) throw err;
+                  if (result.length) {
+                    prefixModel.replaceOne({
+                      guildid: guildID
+                    }, {
+                      guildid: guildID,
+                      prefix: setArgs
+                    }, function (err, result) {
+                      if (err) throw err;
+                      sendMessage(message, `The prefix has been changed to **${setArgs}**.`);
+                    }).catch(err => console.log(err));
+                  } else {
+                    let prefixSet = new prefixModel({
+                      guildid: guildID,
+                      prefix: setArgs
+                    }).save().then(result => sendMessage(message, `The prefix is now set to **${setArgs}**.`)).catch(err => console.log(err));
+                  }
+                }).catch(err => console.log(err));
+              } else if (setArgs.length === 1) {
+                prefixModel.findOneAndDelete({
+                  guildid: guildID
+                }, function (err, result) {
+                  if (err) throw err;
+                  sendMessage(message, `The prefix has been reset to **t!**.`);
+                }).catch(err => console.log(err));
+              } else { sendMessage(message, 'Something went wrong :confused: . Prefixes cannot contain any spaces. Do \`t!help\` to get command info.'); }
               break;
 
             default:
