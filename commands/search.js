@@ -1,8 +1,6 @@
 // Dependencies
 const Discord = require('discord.js');
-const { SMASHGGTOKEN } = require('../config.json');
-const fetch = require('node-fetch');
-const { convertEpoch, convertEpochToClock, sendMessage } = require('../functions');
+const { convertEpoch, convertEpochToClock, sendMessage, queryAPI } = require('../functions');
 
 module.exports = {
   name: 'search',
@@ -86,20 +84,8 @@ module.exports = {
                         }
                       }`;
 
-        fetch('https://api.smash.gg/gql/alpha', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + SMASHGGTOKEN
-          },
-          body: JSON.stringify({
-            query,
-            variables: { perPage, videogameId },
-          })
-        })
-          .then(r => r.json())
-          .then(data => {
+        queryAPI(query, { perPage, videogameId }).then(data => {
+          if (data.data) {
             let upcomingTournaments = data.data.tournaments.nodes;
             let tournamentArray = [];
 
@@ -108,61 +94,58 @@ module.exports = {
             }
 
             const generateEmbed = index => {
+              let tournament = tournamentArray[index];
 
-              return searchEmbed();
-
-              function searchEmbed() {
-                let tournament = tournamentArray[index];
-
-                let imageurl = ['', ''];
+              let imageurl = ['', ''];
+              if (tournament.images) {
                 for (let image of tournament.images) {
                   if (image) image.height === image.width ? imageurl[0] = image.url : imageurl[1] = image.url;
                 }
+              }
 
-                let tournamentOnline = 'Offline';
-                if (tournament.isOnline) tournamentOnline = 'Online';
+              let tournamentOnline = 'Offline';
+              if (tournament.isOnline) tournamentOnline = 'Online';
 
-                let events = [];
-                for (e = 0; e < tournament.events.length; e++) {
-                  if (e < 3) {
-                    events.push(`\`${tournament.events[e].name}\``);
-                    events.push(`${tournament.events[e].numEntrants} Entrants`);
-                    events.push(`*${convertEpoch(tournament.events[e].startAt, 'America/Los_Angeles')}*`);
-                    if (tournament.events[e].checkInEnabled) events.push(`__Check-in opens at ${convertEpochToClock(tournament.events[e].startAt - tournament.events[e].checkInBuffer - tournament.events[e].checkInDuration, 'America/Los_Angeles', false)} and closes at ${convertEpochToClock(tournament.events[e].startAt - tournament.events[e].checkInBuffer, 'America/Los_Angeles', false)}.__`);
-                  } else {
-                    events.push('\`And more...\`');
-                    e = tournament.events.length;
+              let events = [];
+              for (e = 0; e < tournament.events.length; e++) {
+                if (e < 3) {
+                  events.push(`\`${tournament.events[e].name}\``);
+                  events.push(`${tournament.events[e].numEntrants} Entrants`);
+                  events.push(`*${convertEpoch(tournament.events[e].startAt, 'America/Los_Angeles')}*`);
+                  if (tournament.events[e].checkInEnabled) events.push(`__Check-in opens at ${convertEpochToClock(tournament.events[e].startAt - tournament.events[e].checkInBuffer - tournament.events[e].checkInDuration, 'America/Los_Angeles', false)} and closes at ${convertEpochToClock(tournament.events[e].startAt - tournament.events[e].checkInBuffer, 'America/Los_Angeles', false)}.__`);
+                } else {
+                  events.push('\`And more...\`');
+                  e = tournament.events.length;
+                }
+              }
+
+              let streams = [];
+              if (tournament.streams) {
+                for (let stream of tournament.streams) {
+                  if (stream.streamSource === 'TWITCH') {
+                    streams.push(`https://twitch.tv/${stream.streamName}`);
                   }
                 }
+              }
 
-                let streams = [];
-                if (tournament.streams) {
-                  for (let stream of tournament.streams) {
-                    if (stream.streamSource === 'TWITCH') {
-                      streams.push(`https://twitch.tv/${stream.streamName}`);
-                    }
-                  }
-                }
-
-                const searchEmbed = new Discord.MessageEmbed()
-                  .setColor('#222326')
-                  .setTitle(tournament.name)
-                  .setURL(`https://smash.gg/${tournament.slug}`)
-                  .setThumbnail(imageurl[0])
-                  .setImage(imageurl[1])
-                  .addFields(
-                    {
-                      name: 'Tournament Info', value: `
+              const searchEmbed = new Discord.MessageEmbed()
+                .setColor('#222326')
+                .setTitle(tournament.name)
+                .setURL(`https://smash.gg/${tournament.slug}`)
+                .setThumbnail(imageurl[0])
+                .setImage(imageurl[1])
+                .addFields(
+                  {
+                    name: 'Tournament Info', value: `
 ${tournament.numAttendees} Attendees
 *${tournamentOnline} Tournament*
 *${convertEpoch(tournament.startAt, 'America/Los_Angeles')}*`, inline: true
-                    },
-                    { name: 'Events', value: events.join('\n'), inline: true },
-                  )
-                  .setFooter(`Tournament ${index + 1} of ${tournamentArray.length}`, 'https://cdn.discordapp.com/attachments/719461475848028201/777094320531439636/image.png');
-                if (streams.length) searchEmbed.addField('Streams', streams.join('\n'));
-                return searchEmbed;
-              }
+                  },
+                  { name: 'Events', value: events.join('\n'), inline: true },
+                )
+                .setFooter(`Tournament ${index + 1} of ${tournamentArray.length}`, 'https://cdn.discordapp.com/attachments/719461475848028201/777094320531439636/image.png');
+              if (streams.length) searchEmbed.addField('Streams', streams.join('\n'));
+              return searchEmbed;
             }
 
             let currentIndex = 0;
@@ -194,8 +177,8 @@ ${tournament.numAttendees} Attendees
                 console.log(`Done collecting for search`);
               });
             }).catch(err => console.log(err));
-
-          }).catch(err => console.log(err));
+          }
+        }).catch(err => console.log(err));
       } else { sendMessage(message, `I could not find the specified game. Do \`t!help\` to get command info.`); }
     } else { sendMessage(message, `There is no game provided. Do \`t!help\` to get command info.`); }
   },
