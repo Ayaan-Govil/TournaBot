@@ -8,7 +8,7 @@ TournaBot handles the account-linking between smash.gg and Discord manually. Sev
 
 :small_orange_diamond: **Tournament Reminders**
 
-Automatic reminders for your tournaments an hour before they begin. You must have their accounts linked to activate tournament reminders (see **Accounts**). *You may also respond with \`tournament reminders\` or \`reminders\` to see this category.*
+Automatic reminders for your tournaments an hour before they begin. A user must have their accounts linked to activate tournament reminders (see **Accounts**). *You may also respond with \`tournament reminders\` or \`reminders\` to see this category.*
 
 :small_orange_diamond: **User Tournament Results**
 
@@ -33,6 +33,10 @@ Discord role-based matchmaking to another level, which enables users to specify 
 :small_orange_diamond: **Tournament Searching**
 
 Search for smash.gg tournaments by game directly in your Discord server. *You may also respond with \`searching\` to see this category.*
+
+:small_orange_diamond: **Custom Prefix**
+
+Assign a custom prefix for TournaBot. *You may also respond with \`prefix\` to see this category.*
 
 :small_orange_diamond: **More Info**
 
@@ -204,7 +208,7 @@ ${descriptions[index]}`)
 const generateLocalizationEmbed = index => {
   const label = '**Localization**';
   const descriptions = [`
-> \`t!set timezone <city>\`
+> \`t!set timezone <city (optional)>\`
 
 Sets the timezone that TournaBot uses, altering the timestamps shown in tournament reminders, \`t!results\`, and \`t!announce\`. Providing no arguments will reset the timezone to \`America/Los_Angeles\` (PST/PDT).
 
@@ -212,7 +216,7 @@ Currently supported cities: \`America/Los_Angeles\`, \`America/Phoenix\`, \`Amer
 
 Join the support server or contact the developer/owner (see **More Info**) if you need support for a city/timezone not shown above.
 `, `
-> \`t!set language <language in ISO-639-1 code>\`
+> \`t!set language <language in ISO-639-1 code (optional)>\`
 
 Sets the language that Tournabot uses. Language localization does not apply to DQ Pinging, User Tournament Results, and some other messages due to formatting issues and restrictions. Providing no arguments will reset the language to \`English (en)\`.
 
@@ -289,6 +293,23 @@ Join the support server or contact the developer/owner (see **More Info**) if yo
   return searchEmbed;
 }
 
+const generatePrefixEmbed = index => {
+  const prefixEmbed = new Discord.MessageEmbed()
+    .setColor('#222326')
+    .setDescription(`
+**Custom Prefix**
+
+> \`t!set prefix <prefix (optional)>\`
+
+Assign a custom prefix for TournaBot. Please note that prefixes cannot contain any spaces. Providing no arguments will reset the prefix to \`t!\`.
+
+\`t!set prefix <prefix (optional)>\` and \`t!help\` can always be run with the original prefix, \`t!\`.
+`)
+    .setImage('https://i.imgur.com/uLWYdgM.png')
+    .setFooter(`Command 1 of 1`, 'https://cdn.discordapp.com/attachments/719461475848028201/777094320531439636/image.png');
+  return prefixEmbed;
+}
+
 const generateInfoEmbed = index => {
   const infoEmbed = new Discord.MessageEmbed()
     .setColor('#222326')
@@ -308,5 +329,6 @@ module.exports = {
   generateLocalizationEmbed: generateLocalizationEmbed,
   generateMatchmakingEmbed: generateMatchmakingEmbed,
   generateSearchEmbed: generateSearchEmbed,
+  generatePrefixEmbed: generatePrefixEmbed,
   generateInfoEmbed: generateInfoEmbed
 };
