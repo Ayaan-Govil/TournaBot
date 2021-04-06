@@ -36,6 +36,8 @@ Please check out [TournaBot's top.gg page](https://top.gg/bot/719283403698077708
 
 - **Full localization** through custom timezones and languages.
 
+- **Custom Prefixes** so that TournaBot never clashes with other bots.
+
 ## Contributing
 
 ### Running TournaBot Locally
