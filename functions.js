@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const { SMASHGGTOKEN } = require('./config.json');
 const languageModel = require('./database/models/language');
 const fetch = require('node-fetch');
 
@@ -16,19 +17,13 @@ function convertEpoch(epoch, citytimezone) {
   let firstTen = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09'];
   let ampm;
 
-  if (monthDate.startsWith(0)) {
-    monthDate = monthDate.slice(1);
-  }
+  if (monthDate.startsWith(0)) monthDate = monthDate.slice(1);
 
   hour.includes('PM') ? ampm = 'PM' : ampm = 'AM';
   hour = hour.replace(/\D/g, '');
-  if (hour.startsWith(0)) {
-    hour = hour.slice(1);
-  }
+  if (hour.startsWith(0)) hour = hour.slice(1);
 
-  if (minutes.length === 1) {
-    minutes = firstTen[minutes];
-  }
+  if (minutes.length === 1) minutes = firstTen[minutes];
 
   timezone = timezone.slice(timezone.length - 3);
 
@@ -48,13 +43,9 @@ function convertEpochToClock(epoch, citytimezone, showSeconds) {
 
   hour.includes('PM') ? ampm = 'PM' : ampm = 'AM';
   hour = hour.replace(/\D/g, '');
-  if (hour.startsWith(0)) {
-    hour = hour.slice(1);
-  }
+  if (hour.startsWith(0)) hour = hour.slice(1);
 
-  if (minutes.length === 1) {
-    minutes = firstTen[minutes];
-  }
+  if (minutes.length === 1) minutes = firstTen[minutes];
 
   if (showSeconds) {
     seconds = `${date.getSeconds()}`;
@@ -111,8 +102,24 @@ function sendMessage(message, specifiedMessage, messageType) {
   }
 }
 
+async function queryAPI(query, variables) {
+  return await fetch('https://api.smash.gg/gql/alpha', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ' + SMASHGGTOKEN
+    },
+    body: JSON.stringify({
+      query,
+      variables: variables,
+    })
+  }).then(r => { return r.json() }).catch(err => console.log(err));
+}
+
 module.exports = {
   convertEpoch: convertEpoch,
   convertEpochToClock: convertEpochToClock,
-  sendMessage: sendMessage
+  sendMessage: sendMessage,
+  queryAPI: queryAPI
 };
