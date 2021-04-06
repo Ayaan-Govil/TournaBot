@@ -59,7 +59,11 @@ Possible arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
                 }
               }).catch(err => console.log(err));
             } else { sendMessage(message, 'I could not recognize the profile URL. Do \`t!help\` to get command info.') }
-          } else { sendMessage(message, 'Something went wrong :confused: . Do \`t!help\` to get command info.'); }
+          } else {
+            sendMessage(message, `Something went wrong :confused: . Do \`t!help\` to get command info.
+          
+Command format: \`t!account link <smash.gg profile URL>\``);
+          }
           break;
 
         // t!account unlink
@@ -285,7 +289,9 @@ Possible arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optio
           break;
 
         default:
-          sendMessage(message, 'I could not recognize the argument provided. Do \`t!help\` to get command info.');
+          sendMessage(message, `I could not recognize the argument provided. Do \`t!help\` to get command info.
+          
+Possible arguments: \`link <profile URL>\`, \`unlink\`, \`status <discord (optional)>\``);
       }
     }
   },
