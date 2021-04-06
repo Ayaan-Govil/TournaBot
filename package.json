@@ -1,6 +1,6 @@
 {
   "name": "tournabot",
-  "version": "4.1.4",
+  "version": "4.1.8",
   "description": "Streamline smash.gg tournaments and improve user quality-of-life.",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,6 @@
     "nodemon": "^2.0.7",
     "replaceall": "^0.1.6",
     "set-accurate-timeout": "^1.0.1",
-    "urllib": "^2.36.1"
+    "urllib": "^2.23.0"
   }
 }
