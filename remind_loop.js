@@ -1,11 +1,9 @@
 // Dependencies
 const Discord = require('discord.js');
-const { SMASHGGTOKEN } = require('./config.json');
-const fetch = require('node-fetch');
 const Vibrant = require('node-vibrant');
 const accurateInterval = require('accurate-interval');
 const setAccurateTimeout = require('set-accurate-timeout');
-const { convertEpoch, convertEpochToClock } = require('./functions');
+const { convertEpoch, convertEpochToClock, queryAPI } = require('./functions');
 
 // MongoDB Models
 const accountModel = require('./database/models/account');
@@ -66,20 +64,9 @@ async function remindLoop(client) {
             }
           }
         }`;
-        fetch('https://api.smash.gg/gql/alpha', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + SMASHGGTOKEN
-          },
-          body: JSON.stringify({
-            query,
-            variables: { slug },
-          })
-        })
-          .then(r => r.json())
-          .then(data => {
+
+        queryAPI(query, { slug }).then(data => {
+          if (data.data) {
             let upcomingTournaments = data.data.user.tournaments.nodes
             if (upcomingTournaments) {
               upcomingTournaments.reverse();
@@ -95,8 +82,10 @@ async function remindLoop(client) {
 
                     function reminder(id, tournament) {
                       let imageurl = ['', ''];
-                      for (let image of tournament.images) {
-                        if (image) image.height === image.width ? imageurl[0] = image.url : imageurl[1] = image.url;
+                      if (tournament.images) {
+                        for (let image of tournament.images) {
+                          if (image) image.height === image.width ? imageurl[0] = image.url : imageurl[1] = image.url;
+                        }
                       }
 
                       if (imageurl[0].length) {
@@ -144,7 +133,7 @@ async function remindLoop(client) {
                             {
                               name: 'Tournament Info', value: `
 ${tournament.numAttendees} Attendees
-*${tournamentOnline} Tournament*
+*${tournamentOnline} Tournament*c
 *${convertEpoch(tournament.startAt, 'America/Los_Angeles')}*`, inline: true
                             },
                             { name: 'Events', value: events.join('\n'), inline: true },
@@ -164,7 +153,8 @@ ${tournament.numAttendees} Attendees
                 }
               }
             } //else console.log(`No upcoming tournaments for ${user.discordtag}`);
-          }).catch(err => console.log(err));
+          }
+        }).catch(err => console.log(err));
       }
     }).catch(err => console.log(err));
   }
