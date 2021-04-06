@@ -1,6 +1,6 @@
 // Dependencies
 const Discord = require('discord.js');
-const { generateHelpSelection, generateAccountsEmbed, generateReminderEmbed, generateResultsEmbed, generateDQPingingEmbed, generateAnnounceEmbed, generateLocalizationEmbed, generateMatchmakingEmbed, generateSearchEmbed, generateInfoEmbed } = require('./help_embeds/help_embeds.js');
+const { generateHelpSelection, generateAccountsEmbed, generateReminderEmbed, generateResultsEmbed, generateDQPingingEmbed, generateAnnounceEmbed, generateLocalizationEmbed, generateMatchmakingEmbed, generateSearchEmbed, generatePrefixEmbed, generateInfoEmbed } = require('./help_embeds/help_embeds.js');
 const { generateHelp } = require('./help_embeds/generate_help.js');
 const { sendMessage } = require('../functions.js');
 const { closest } = require('fastest-levenshtein');
@@ -24,7 +24,7 @@ Feel free to contact **F0ne#1933** with any specific issues or feedback, or join
     let currentIndex = 0;
     message.channel.send(generateHelpSelection(currentIndex)).then(message => {
       userMessage.reply('please reply with the category you would like to see:').catch(err => console.log(err));
-      
+
       // MESSAGE COLLECTOR
 
       const filter = m => m.author.id === userMessage.author.id && m.author.id != message.author.id && !m.author.bot;
@@ -40,7 +40,6 @@ Feel free to contact **F0ne#1933** with any specific issues or feedback, or join
             generateHelp(message, client, generateAccountsEmbed, 3, m);
             break;
 
-          case 'tournament reminders (beta)':
           case 'tournament reminders':
           case 'reminders':
             generateHelp(message, client, generateReminderEmbed, 2, m);
@@ -53,7 +52,8 @@ Feel free to contact **F0ne#1933** with any specific issues or feedback, or join
             break;
 
           // DQ Pinging
-          case 'dq pinging (automatic match calling)':
+          case 'automatic match calling (dq pinging)':
+          case 'automatic match calling':
           case 'dq pinging':
             generateHelp(message, client, generateDQPingingEmbed, 3, m);
             break;
@@ -79,13 +79,18 @@ Feel free to contact **F0ne#1933** with any specific issues or feedback, or join
             generateHelp(message, client, generateSearchEmbed, 1, m);
             break;
 
+          // Custom Prefix
+          case 'custom prefix':
+          case 'prefix':
+            generateHelp(message, client, generatePrefixEmbed, 1, m)
+
           // More Info
           case 'more info':
             generateHelp(message, client, generateInfoEmbed, 1, m);
             break;
 
           default:
-            if (matches < 2) userMessage.reply(`There is no category called \`${m.content}\`. Did you mean \`${closest(m.content, ['accounts', 'tournament reminders (beta)', 'tournament reminders', 'reminders', 'user tournament results', 'results', 'dq pinging (automatic match calling)', 'dq pinging', 'tournament announcing', 'announcing', 'localization', 'matchmaking', 'tournament searching', 'searching', 'more info'])}\`?`).catch(err => console.log(err));
+            if (matches < 2) userMessage.reply(`There is no category called \`${m.content}\`. Did you mean \`${closest(m.content, ['accounts', 'tournament reminders', 'reminders', 'user tournament results', 'results', 'automatic match calling (dq pinging)', 'automatic match calling', 'dq pinging', 'tournament announcing', 'announcing', 'localization', 'matchmaking', 'tournament searching', 'searching', 'more info'])}\`?`).catch(err => console.log(err));
         }
       });
 
