@@ -70,6 +70,7 @@ TournaBot uses the following collections for categorizing data:
 - `pingroles`
 - `timezones`
 - `userids`
+- `prefixes`
 
 If there is no collection present for a given model, no data for that model will be collected.
 
