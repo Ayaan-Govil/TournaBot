@@ -1,0 +1,5 @@
+{
+    "watch": ["src", "database", "command_setup"],
+    "ext": "ts",
+    "exec": "tsc && node build/src/main.js"
+}

@@ -1,0 +1,74 @@
+{
+    "locale": "en",
+    "data": [
+        {
+            "intent": "issue.absent",
+            "utterances": [
+                "my opponent isn't here",
+                "person isn't here",
+                "person is not here",
+                "my opponent hasn't shown up",
+                "they haven't checked in",
+                "they missed check-in",
+                "where is my opponent"
+            ],
+            "answers": [
+                "**I see that you are having an issue with your opponent being absent.** Is that correct?"
+            ]
+        },
+        {
+            "intent": "issue.bracket",
+            "utterances": [
+                "theres an issue with the bracket",
+                "the bracket is messed up",
+                "im seeded wrong",
+                "they are seeded wrong",
+                "theres a conflict",
+                "theres a bracket conflict",
+                "something is wrong with the bracket",
+                "the set is reported wrong",
+                "someone reported the set incorrectly",
+                "the score for my set is wrong",
+                "i won the last match",
+                "i won the last match even though its reported as loss"
+            ],
+            "answers": [
+                "**I see that you are having an issue with the bracket.** Is that correct?"
+            ]
+        },
+        {
+            "intent": "affirmation.no",
+            "utterances": [
+                "no",
+                "no thank you",
+                "im good",
+                "no im fine"
+            ],
+            "answers": []
+        },
+        {
+            "intent": "affirmation.yes",
+            "utterances": [
+                "yes",
+                "yes please",
+                "yes i would like to",
+                "please do",
+                "of course",
+                "sure"
+            ],
+            "answers": []
+        },
+        {
+            "intent": "admin",
+            "utterances": [
+                "can you get an admin",
+                "i want an admin",
+                "can you get a mod",
+                "i need a mod",
+                "can a mod help me",
+                "can an admin help me"
+            ],
+            "answers": []
+        }
+    ]
+}
