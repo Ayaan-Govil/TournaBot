@@ -1,7 +1,7 @@
-import { ColorResolvable, CommandInteraction, MessageActionRow, MessageButton, MessageComponentInteraction, MessageEmbed, TextChannel } from "discord.js";
+import { ColorResolvable, CommandInteraction, EmbedBuilder, MessageComponentInteraction, TextChannel } from "discord.js";
 import ShortUniqueId from "short-unique-id";
 import { client } from "./main";
-import { Indexable } from "./types/global";
+import { Indexable } from "./types/global.types";
 import fetch from 'node-fetch';
 require('dotenv').config();
 
@@ -41,7 +41,7 @@ export class Messenger {
     }
 
     getEmbed(content: string) {
-        return new MessageEmbed()
+        return new EmbedBuilder()
             .setDescription(content)
             .setColor(`#${process.env.EMBED_COLOR}`);
     }

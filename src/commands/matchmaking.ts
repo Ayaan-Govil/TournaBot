@@ -1,8 +1,8 @@
 import { CommandInteraction, DMChannel, GuildMember, MessageComponentInteraction, SelectMenuInteraction, TextChannel, ThreadManager } from "discord.js";
 import { Messenger } from "../messaging";
-import { GuildManager } from "../types/guild";
-import { GameShorthand } from "../types/matchmaking/match";
-import { MatchmakingQueue, MatchmakingQueueData, QueueManager } from "../types/matchmaking/queue";
+import { GuildManager } from "../types/guild.types";
+import { GameShorthand } from "../types/matchmaking/match.types";
+import { MatchmakingQueue, MatchmakingQueueData, QueueManager } from "../types/matchmaking/queue.types";
 
 
 // ADD DELETE GAME THROUGH ADMIN PANEL
@@ -18,11 +18,11 @@ export default {
         m.setLocale(guild.locale);
         const queue = await QueueManager.get(interaction.guildId, interaction.channelId);
 
-        const subCommandName = interaction.options.getSubcommand();
+        const subCommandName = interaction.options.data[0].name;
         switch (subCommandName) {
             case 'create':
-                const name = interaction.options.getString('name');
-                const gameShorthand = interaction.options.getString('game') as GameShorthand;
+                const name = interaction.options.get('name').value;
+                const gameShorthand = interaction.options.get('game').value as GameShorthand;
 
                 const newQueue = await QueueManager.create(
                     {

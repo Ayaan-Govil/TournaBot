@@ -4,19 +4,18 @@
   "description": "Streamline start.gg tournaments and improve user quality-of-life.",
   "main": "build/src/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && node build/src/main.js",
     "build": "tsc && node build/command_setup/create_commands_guild.js && node build/src/nlp/train_model.js",
     "train": "tsc && node build/src/nlp/train_model.js",
     "deploy": "tsc && node build/command_setup/create_commands_global.js && node build/src/nlp/train_model.js",
-    "delete": "tsc ** node build/command_setup/delete_commands.js"
+    "delete": "tsc && node build/command_setup/delete_commands.js"
   },
   "author": "Ayaan Govil",
   "license": "GPL-3.0",
   "dependencies": {
-    "@discordjs/builders": "^0.13.0",
     "@discordjs/rest": "^0.4.1",
     "discord-api-types": "^0.33.0",
-    "discord.js": "^13.7.0",
+    "discord.js": "^14.9.0",
     "dotenv": "^16.0.1",
     "fast-average-color-node": "^2.2.0",
     "mongoose": "^6.3.3",

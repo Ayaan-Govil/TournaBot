@@ -1,10 +1,10 @@
-import { CommandInteraction, Message, MessageActionRow, MessageComponentInteraction, MessageSelectMenu, SelectMenuInteraction, TextChannel } from "discord.js";
+import { ActionRowBuilder, CommandInteraction, Message, MessageComponentInteraction, SelectMenuBuilder, SelectMenuInteraction, TextChannel } from "discord.js";
 import { Accounts } from "../../database/models/accounts";
 import { client } from "../main";
 import { Messenger } from "../messaging";
 import nlp from "../nlp/load_model";
-import { GuildManager, TournaBotGuild } from "../types/guild";
-import { issues, SupportManager } from "../types/support";
+import { GuildManager, TournaBotGuild } from "../types/guild.types";
+import { issues, SupportManager } from "../types/support.types";
 
 
 
@@ -37,8 +37,8 @@ export default {
         const ticket = await SupportManager.getByChannelId(interaction.guildId, ticketChannel.id);
         ticket.phase = 'question';
 
-        const actionRow = new MessageActionRow().addComponents(
-            new MessageSelectMenu()
+        const actionRow = new ActionRowBuilder<SelectMenuBuilder>().addComponents(
+            new SelectMenuBuilder()
                 .setCustomId('support')
                 .setPlaceholder(await m.translate('Reply below or select your issue...'))
                 .addOptions(issues.map(issue => {

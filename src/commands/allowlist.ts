@@ -1,6 +1,6 @@
 import { CommandInteraction, MessageComponentInteraction } from "discord.js";
 import { Messenger } from "../messaging";
-import { GuildManager } from "../types/guild";
+import { GuildManager } from "../types/guild.types";
 
 export default {
     name: 'allowlist',
@@ -11,11 +11,11 @@ export default {
         const guild = await GuildManager.get(interaction.guildId);
         m.setLocale(guild.locale);
 
-        const role = interaction.options.getRole('role');
+        const role = interaction.options.get('role').role;
         let reply: string;
 
-        const subCommand = interaction.options.getSubcommand();
-        switch (subCommand) {
+        const subCommandName = interaction.options.data[0].name;
+        switch (subCommandName) {
             case 'add':
                 if (guild.allowlist.includes(role.id)) return m.editReply('**This role is already added.**');
                 guild.allowlist.push(role.id);

@@ -3,7 +3,7 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 require('dotenv').config();
 
-const client = new Discord.Client({ intents: ['GUILDS'] });
+const client = new Discord.Client({ intents: ['Guilds'] });
 const TOKEN = process.env.DISCORD_BOT_TOKEN;
 
 client.once('ready', () => {

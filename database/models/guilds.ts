@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { TournaBotGuildData } from '../../src/types/guild';
+import { TournaBotGuildData } from '../../src/types/guild.types';
 
 const fileName = require('path').basename(__filename);
 const collectionName = fileName.substring(0, fileName.length - 3);

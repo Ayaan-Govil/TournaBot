@@ -139,6 +139,18 @@ const commandObjects: CommandObject[] = [
                         choices: timezones
                     }
                 ]
+            },
+            {
+                name: 'tournament',
+                description: 'Set the server\'s active tournament. Functions the same as /tournament set.',
+                options: [
+                    {
+                        name: 'url',
+                        description: 'The URL/short URL for the tournament you are setting.',
+                        optionType: 'STRING',
+                        required: true,
+                    }
+                ]
             }
         ]
     },
@@ -148,7 +160,7 @@ const commandObjects: CommandObject[] = [
         subcommands: [
             {
                 name: 'set',
-                description: 'Set the server\'s active tournament.',
+                description: 'Set the server\'s active tournament. Functions the same as /set tournament.',
                 options: [
                     {
                         name: 'url',
@@ -262,34 +274,34 @@ const commandObjects: CommandObject[] = [
         description: 'Explains how to use TournaBot\'s features/commands.',
         subcommands: []
     },
-    // {
-    //     name: 'reminders',
-    //     description: 'Toggle automatic tournament reminders.',
-    //     subcommands: [
-    //         {
-    //             name: 'toggle',
-    //             description: 'Toggle automatic tournament reminders.',
-    //             options: [
-    //                 {
-    //                     name: 'toggle',
-    //                     description: 'Whether you want reminders on or off.',
-    //                     optionType: 'STRING',
-    //                     required: true,
-    //                     choices: [
-    //                         {
-    //                             name: 'on',
-    //                             value: 'true',
-    //                         },
-    //                         {
-    //                             name: 'off',
-    //                             value: 'false',
-    //                         }
-    //                     ]
-    //                 }
-    //             ]
-    //         }
-    //     ]
-    // },
+    {
+        name: 'reminders',
+        description: 'Toggle automatic tournament reminders.',
+        subcommands: [
+            {
+                name: 'toggle',
+                description: 'Toggle automatic tournament reminders.',
+                options: [
+                    {
+                        name: 'toggle',
+                        description: 'Whether you want reminders on or off.',
+                        optionType: 'STRING',
+                        required: true,
+                        choices: [
+                            {
+                                name: 'on',
+                                value: 'true',
+                            },
+                            {
+                                name: 'off',
+                                value: 'false',
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
     // {
     //     name: 'matchmaking',
     //     description: 'Create, delete, or refresh a matchmaking queue.',

@@ -7,7 +7,7 @@ export default {
     canRunInDMs: false,
     defer: true,
     commandExecute: async (interaction: CommandInteraction, m: Messenger) => {
-        const subCommandName = interaction.options.getSubcommand();
+        const subCommandName = interaction.options.data[0].name;
         switch (subCommandName) {
 
         }

@@ -3,7 +3,7 @@ import { Accounts } from "../../database/models/accounts";
 import { Messenger } from "../messaging";
 import { StartggAPI } from "../startgg/api";
 import { User } from "../startgg/genql";
-import { GuildManager } from "../types/guild";
+import { GuildManager } from "../types/guild.types";
 
 
 
@@ -22,15 +22,15 @@ export default {
             m.setLocale(guild.locale);
         }
 
-        const subCommandName = interaction.options.getSubcommand();
+        const subCommandName = interaction.options.data[0].name;
         switch (subCommandName) {
             case 'link':
-                const profileURL = interaction.options.getString('profile');
-                if (!profileURL.startsWith('https://www.start.gg/user/')) return callBackMessage();
-                const slug = profileURL.replace('https://www.start.gg/user/', '');
+                const profileURL = interaction.options.get('profile').value as string;
+                if (!profileURL.startsWith('https://www.start.gg/user/') && !profileURL.startsWith('https://start.gg/user/')) return callBackMessage();
+                const slug = profileURL.replace('https://www.start.gg/user/', '').replace('https://start.gg/user/', '');
 
                 const data = await StartggAPI.getUser(slug);
-                const user = data.user as User;
+                const user = data?.user as User;
                 if (!user) return callBackMessage();
 
                 const updateQuery = {
@@ -54,11 +54,13 @@ export default {
                 const updateResponse = await Accounts.findOneAndUpdate(updateQuery, update, updateOptions);
                 console.log(`Linked ${updateResponse.discordTag}`);
 
-                return m.editReply('**Success!** Your start.gg and Discord accounts are now linked. Check out `/results` for a custom embed of your placements!');
+                return m.editReply('**Success!** Your start.gg and Discord accounts are now linked.'); //  Check out `/results` for a custom embed of your placements!
 
                 async function callBackMessage() {
                     await m.editReply('**Invalid URL.** Please provide a valid start.gg profile URL.\nExample: https://start.gg/user/96687337');
                 }
+
+
 
             case 'unlink':
                 const conditions = {
@@ -82,6 +84,7 @@ export default {
                 const findResponse = await Accounts.findOne(findQuery);
                 if (findResponse) return m.editReply(`**${mention} start.gg and Discord accounts are linked!** :white_check_mark:`);
                 else return m.editReply(`**${mention} start.gg and Discord accounts are not currently linked.** :x:`);
+            // expand to include tournament
             case 'profile':
                 // write this
                 break;

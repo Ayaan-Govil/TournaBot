@@ -1,6 +1,6 @@
 import { CommandInteraction, DMChannel, GuildMember, MessageComponentInteraction, SelectMenuInteraction } from "discord.js";
 import { Messenger } from "../messaging";
-import { HelpStructure } from "../types/help";
+import { HelpStructure } from "../types/help.types";
 
 export default {
     name: 'help',

@@ -56,26 +56,31 @@ export namespace StartggAPI {
                         },
                         {
                             nodes: {
+                                slug: true,
                                 name: true,
-                                url: true,
-                                numAttendees: true,
                                 startAt: true,
+                                registrationClosesAt: true,
                                 isOnline: true,
+                                state: true,
                                 images: {
                                     height: true,
                                     width: true,
-                                    url: true,
+                                    url: true
                                 },
                                 events: {
+                                    id: true,
                                     name: true,
-                                    numEntrants: true,
+                                    startAt: true,
                                     checkInEnabled: true,
                                     checkInBuffer: true,
                                     checkInDuration: true
                                 },
                                 streams: {
-                                    streamName: true,
-                                    streamSource: true
+                                    id: true,
+                                    isOnline: true,
+                                    streamSource: true,
+                                    streamGame: true,
+                                    streamName: true
                                 }
                             }
                         }
@@ -92,7 +97,9 @@ export namespace StartggAPI {
                     slug: slug
                 },
                 {
+                    slug: true,
                     name: true,
+                    startAt: true,
                     registrationClosesAt: true,
                     isOnline: true,
                     state: true,
@@ -147,6 +154,7 @@ export namespace StartggAPI {
                                     totalGames: true,
                                     fullRoundText: true,
                                     event: {
+                                        slug: true,
                                         name: true
                                     },
                                     slots: {
@@ -205,6 +213,7 @@ export namespace StartggAPI {
                                     fullRoundText: true,
                                     winnerId: true,
                                     event: {
+                                        slug: true,
                                         name: true
                                     },
                                     games: {

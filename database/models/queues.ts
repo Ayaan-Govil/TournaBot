@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { MatchmakingQueueData } from '../../src/types/matchmaking/queue';
+import { MatchmakingQueueData } from '../../src/types/matchmaking/queue.types';
 
 const fileName = require('path').basename(__filename);
 const collectionName = fileName.substring(0, fileName.length - 3);

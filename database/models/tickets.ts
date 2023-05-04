@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { SupportTicketData } from '../../src/types/support';
+import { SupportTicketData } from '../../src/types/support.types';
 
 const fileName = require('path').basename(__filename);
 const collectionName = fileName.substring(0, fileName.length - 3);
