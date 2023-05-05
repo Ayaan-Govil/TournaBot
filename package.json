@@ -18,7 +18,7 @@
     "discord.js": "^14.9.0",
     "dotenv": "^16.0.1",
     "fast-average-color-node": "^2.2.0",
-    "mongoose": "^6.3.3",
+    "mongoose": "^7.1.0",
     "node-fetch": "^2.6.7",
     "node-nlp": "^4.24.0",
     "node-schedule": "^2.1.0",
