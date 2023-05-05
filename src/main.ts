@@ -11,7 +11,9 @@ require('dotenv').config();
 
 export const client = new TournaBotClient({ intents: ['Guilds', 'GuildMessages', 'GuildEmojisAndStickers', 'DirectMessages'] });
 export const guilds: any = null;
-export const cache = createClient();
+export const cache = createClient({
+    url: process.env.REDIS_AUTH_URL
+});
 
 let ready = false;
 
