@@ -134,7 +134,7 @@ export class MatchCallingThread implements MatchThread {
         if (!entrants.length || entrants.length === 1) return;
 
         const embed = new EmbedBuilder()
-            .setAuthor({ name: `${set.event.name} - ${set.fullRoundText} - Best of ${set.totalGames}` })
+            .setAuthor({ name: `${set.event.name} - ${set.fullRoundText}` })
             .setTitle(`${entrants[0].name} vs. ${entrants[1].name}`)
             .setURL(`https://start.gg/${set.event.slug}/set/${set.id}`)
             .setDescription('Your match has been called! Please check-in on start.gg.')
